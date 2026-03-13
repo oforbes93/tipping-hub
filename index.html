@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tipping Hub</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2e3350;
+      --accent-afl: #003087;
+      --accent-afl-light: #0052cc;
+      --accent-nrl: #1a1a2e;
+      --accent-nrl-light: #e63946;
+      --text: #e8eaf6;
+      --text-muted: #8b92b3;
+      --win: #22c55e;
+      --loss: #ef4444;
+      --tip: #f59e0b;
+      --tip-bg: rgba(245,158,11,0.12);
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .logo span { color: var(--tip); }
+
+    .league-toggle {
+      display: flex;
+      background: var(--surface2);
+      border-radius: 999px;
+      padding: 4px;
+      gap: 2px;
+    }
+
+    .league-btn {
+      padding: 6px 20px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+      transition: all 0.2s;
+      background: transparent;
+      color: var(--text-muted);
+    }
+
+    .league-btn.active-afl { background: var(--accent-afl-light); color: #fff; }
+    .league-btn.active-nrl { background: var(--accent-nrl-light); color: #fff; }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 800px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Round selector ── */
+    .round-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .round-bar h2 { font-size: 1.1rem; font-weight: 700; flex: 1; }
+
+    .round-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 6px 12px;
+    }
+
+    .round-nav button {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.1rem;
+      line-height: 1;
+      padding: 2px 6px;
+      border-radius: 6px;
+      transition: color 0.15s;
+    }
+    .round-nav button:hover { color: var(--text); }
+
+    .round-nav span {
+      font-weight: 700;
+      font-size: 0.9rem;
+      min-width: 70px;
+      text-align: center;
+    }
+
+    /* ── Stats strip ── */
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+    }
+
+    .stat-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
+    .stat-value { font-size: 1.7rem; font-weight: 800; margin-top: 2px; }
+    .stat-value.green { color: var(--win); }
+    .stat-value.amber { color: var(--tip); }
+
+    /* ── Match cards ── */
+    .matches { display: flex; flex-direction: column; gap: 12px; }
+
+    .match-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      transition: border-color 0.2s;
+    }
+
+    .match-card:hover { border-color: #3d4470; }
+
+    .match-meta {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .match-teams {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .team {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 12px 8px;
+      border-radius: 10px;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .team:hover { background: var(--surface2); }
+
+    .team.tipped {
+      border-color: var(--tip);
+      background: var(--tip-bg);
+    }
+
+    .team.tipped .team-name { color: var(--tip); }
+
+    .team-logo {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .team-name {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .team-odds {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .vs {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      padding: 0 4px;
+      flex-shrink: 0;
+    }
+
+    .match-result {
+      margin-top: 12px;
+      text-align: center;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .match-result.correct { color: var(--win); }
+    .match-result.incorrect { color: var(--loss); }
+    .match-result.pending { color: var(--text-muted); }
+
+    .score-badge {
+      display: inline-block;
+      background: var(--surface2);
+      border-radius: 6px;
+      padding: 2px 10px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    /* ── Leaderboard ── */
+    .sidebar-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .sidebar-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-card h3 .icon { font-size: 1.2rem; }
+
+    .leaderboard { display: flex; flex-direction: column; gap: 10px; }
+
+    .lb-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      background: var(--surface2);
+      border-radius: 8px;
+      transition: background 0.15s;
+    }
+
+    .lb-row:hover { background: #272b42; }
+
+    .lb-rank {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      width: 20px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .lb-rank.gold { color: #fbbf24; }
+    .lb-rank.silver { color: #94a3b8; }
+    .lb-rank.bronze { color: #b45309; }
+
+    .lb-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .lb-info { flex: 1 }
+    .lb-name { font-size: 0.85rem; font-weight: 600; }
+    .lb-sub { font-size: 0.7rem; color: var(--text-muted); }
+
+    .lb-score {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--win);
+    }
+
+    .lb-row.me {
+      border: 1px solid var(--tip);
+      background: var(--tip-bg);
+    }
+
+    /* ── Progress bar ── */
+    .progress-wrap { margin-top: 20px; }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--surface2);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+
+    /* ── Tip all banner ── */
+    .tip-banner {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      gap: 12px;
+    }
+
+    .tip-banner p { font-size: 0.85rem; color: var(--text-muted); }
+    .tip-banner strong { display: block; font-size: 0.95rem; color: var(--text); }
+
+    .btn {
+      padding: 9px 18px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-amber { background: var(--tip); color: #000; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    .btn-sm { padding: 6px 12px; font-size: 0.75rem; }
+
+    /* ── Season overview ── */
+    .season-card {
+      margin-top: 20px;
+    }
+
+    .rounds-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .round-pip {
+      aspect-ratio: 1;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .round-pip.done-good { background: rgba(34,197,94,0.2); color: var(--win); border-color: rgba(34,197,94,0.3); }
+    .round-pip.done-ok { background: rgba(245,158,11,0.2); color: var(--tip); border-color: rgba(245,158,11,0.3); }
+    .round-pip.done-bad { background: rgba(239,68,68,0.2); color: var(--loss); border-color: rgba(239,68,68,0.3); }
+    .round-pip.current { background: var(--accent-afl-light); color: #fff; border-color: var(--accent-afl-light); }
+    .round-pip.future { background: var(--surface2); color: var(--text-muted); }
+    .round-pip:hover { opacity: 0.8; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 10px 24px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      opacity: 0;
+      transition: all 0.3s;
+      pointer-events: none;
+      z-index: 999;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── Utility ── */
+    .section-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Tipping<span>Hub</span></div>
+  <div class="league-toggle">
+    <button class="league-btn active-afl" id="btn-afl" onclick="setLeague('afl')">AFL</button>
+    <button class="league-btn" id="btn-nrl" onclick="setLeague('nrl')">NRL</button>
+  </div>
+</header>
+
+<div class="container">
+  <div class="stats-strip">
+    <div class="stat-card">
+      <div class="stat-label">Season Tips</div>
+      <div class="stat-value green" id="stat-correct">57</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Accuracy</div>
+      <div class="stat-value amber" id="stat-accuracy">67%</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Current Rank</div>
+      <div class="stat-value" id="stat-rank">3<span style="font-size:1rem;color:var(--text-muted)">/24</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Round Score</div>
+      <div class="stat-value green" id="stat-round">5<span style="font-size:1rem;color:var(--text-muted)">/8</span></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- Main column -->
+    <div>
+      <div class="round-bar">
+        <h2 id="round-title">Round 12</h2>
+        <div class="round-nav">
+          <button onclick="changeRound(-1)">&#8592;</button>
+          <span id="round-label">Round 12</span>
+          <button onclick="changeRound(1)">&#8594;</button>
+        </div>
+      </div>
+
+      <div class="tip-banner" id="tip-banner">
+        <div>
+          <strong>Round 12 — Tips close Thursday 7:30 PM</strong>
+          <p>3 of 8 games tipped &bull; 5 remaining</p>
+        </div>
+        <button class="btn btn-amber btn-sm" onclick="autoTip()">Auto-Tip Favourites</button>
+      </div>
+
+      <div class="matches" id="matches-list"></div>
+    </div>
+
+    <!-- Sidebar -->
+    <div>
+      <div class="sidebar-card">
+        <h3><span class="icon">🏆</span> Leaderboard</h3>
+        <div class="leaderboard" id="leaderboard"></div>
+
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>Season Progress</span>
+            <span id="season-pct">52%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill" style="width:52%; background: linear-gradient(90deg, #0052cc, #f59e0b);"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-card season-card">
+        <h3><span class="icon">📅</span> Season Overview</h3>
+        <p class="section-title">All Rounds</p>
+        <div class="rounds-grid" id="rounds-grid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Data ─────────────────────────────────────────────────────────────────
+const LEAGUES = {
+  afl: {
+    name: 'AFL',
+    color: '#0052cc',
+    rounds: 24,
+    currentRound: 12,
+    teams: [
+      { id: 'coll', name: 'Collingwood',   logo: '🦊', color: '#000000' },
+      { id: 'melb', name: 'Melbourne',     logo: '🔴', color: '#cc2031' },
+      { id: 'carl', name: 'Carlton',       logo: '🔵', color: '#002b5c' },
+      { id: 'rich',  name: 'Richmond',     logo: '🐯', color: '#f2a900' },
+      { id: 'bris', name: 'Brisbane',      logo: '🦁', color: '#a30046' },
+      { id: 'geel', name: 'Geelong',       logo: '🐱', color: '#1c3c6b' },
+      { id: 'hawthorn', name: 'Hawthorn', logo: '🦅', color: '#4d2004' },
+      { id: 'west',  name: 'W. Bulldogs', logo: '🐶', color: '#014896' },
+      { id: 'gws',   name: 'GWS Giants',  logo: '🔶', color: '#f47920' },
+      { id: 'adel',  name: 'Adelaide',    logo: '🦅', color: '#002b5c' },
+      { id: 'port',  name: 'Port Adelaide',logo: '⚡', color: '#008aab' },
+      { id: 'essd',  name: 'Essendon',    logo: '🔴', color: '#cc2031' },
+      { id: 'nmel',  name: 'North Melb',  logo: '🦘', color: '#003087' },
+      { id: 'syd',   name: 'Sydney',      logo: '🦢', color: '#e2001a' },
+      { id: 'stk',   name: 'St Kilda',    logo: '⭐', color: '#ed0f05' },
+      { id: 'frem',  name: 'Fremantle',   logo: '🟣', color: '#2a1a5e' },
+    ],
+    matches: [
+      { home: 'coll', away: 'melb',   homeOdds: 1.65, awayOdds: 2.30, venue: 'MCG',            time: 'Thu 7:30 PM', result: null },
+      { home: 'carl', away: 'rich',   homeOdds: 2.10, awayOdds: 1.75, venue: 'Marvel Stadium', time: 'Fri 7:50 PM', result: null },
+      { home: 'bris', away: 'geel',   homeOdds: 1.55, awayOdds: 2.50, venue: 'Gabba',          time: 'Sat 1:45 PM', result: null },
+      { home: 'hawthorn', away: 'west', homeOdds: 1.80, awayOdds: 2.00, venue: 'MCG',          time: 'Sat 4:35 PM', result: null },
+      { home: 'gws',  away: 'adel',   homeOdds: 1.90, awayOdds: 1.90, venue: 'ENGIE Stadium', time: 'Sat 7:25 PM', result: null },
+      { home: 'port', away: 'essd',   homeOdds: 1.45, awayOdds: 2.75, venue: 'Adelaide Oval', time: 'Sat 7:25 PM', result: null },
+      { home: 'nmel', away: 'syd',    homeOdds: 2.40, awayOdds: 1.60, venue: 'Marvel Stadium', time: 'Sun 1:10 PM', result: null },
+      { home: 'stk',  away: 'frem',   homeOdds: 2.20, awayOdds: 1.70, venue: 'Marvel Stadium', time: 'Sun 3:20 PM', result: null },
+    ],
+  },
+  nrl: {
+    name: 'NRL',
+    color: '#e63946',
+    rounds: 27,
+    currentRound: 11,
+    teams: [
+      { id: 'storm',  name: 'Melbourne',      logo: '⚡', color: '#5e259b' },
+      { id: 'roosters',name: 'Roosters',      logo: '🐓', color: '#003a78' },
+      { id: 'panthers',name: 'Panthers',      logo: '🐾', color: '#c8003a' },
+      { id: 'broncos', name: 'Broncos',       logo: '🐴', color: '#6f263d' },
+      { id: 'raiders', name: 'Raiders',       logo: '🗡️', color: '#88b04b' },
+      { id: 'sea',     name: 'Sea Eagles',    logo: '🦅', color: '#6f0026' },
+      { id: 'rabbitohs',name:'Rabbitohs',     logo: '🐇', color: '#007a4d' },
+      { id: 'sharks',  name: 'Sharks',        logo: '🦈', color: '#00a0c6' },
+      { id: 'titans',  name: 'Titans',        logo: '🌊', color: '#009fd8' },
+      { id: 'cowboys', name: 'Cowboys',       logo: '🤠', color: '#003b8e' },
+      { id: 'dragons', name: 'Dragons',       logo: '🐉', color: '#e4002b' },
+      { id: 'knights', name: 'Knights',       logo: '🛡️', color: '#003087' },
+      { id: 'tigers',  name: 'Wests Tigers',  logo: '🐯', color: '#f47920' },
+      { id: 'eels',    name: 'Eels',          logo: '🟡', color: '#c8a900' },
+      { id: 'warriors',name: 'Warriors',      logo: '⚔️', color: '#009bde' },
+      { id: 'bulldogs',name: 'Bulldogs',      logo: '🐶', color: '#0057b8' },
+    ],
+    matches: [
+      { home: 'storm',   away: 'roosters', homeOdds: 1.55, awayOdds: 2.45, venue: 'AAMI Park',       time: 'Thu 8:00 PM', result: null },
+      { home: 'panthers',away: 'broncos',  homeOdds: 1.40, awayOdds: 2.85, venue: 'BlueBet Stadium', time: 'Fri 6:00 PM', result: null },
+      { home: 'raiders', away: 'sea',      homeOdds: 1.95, awayOdds: 1.85, venue: 'GIO Stadium',     time: 'Fri 8:05 PM', result: null },
+      { home: 'rabbitohs',away:'sharks',   homeOdds: 2.05, awayOdds: 1.80, venue: 'Accor Stadium',   time: 'Sat 3:00 PM', result: null },
+      { home: 'titans',  away: 'cowboys',  homeOdds: 2.20, awayOdds: 1.68, venue: 'Cbus Super',      time: 'Sat 5:30 PM', result: null },
+      { home: 'dragons', away: 'knights',  homeOdds: 1.85, awayOdds: 1.95, venue: 'WIN Stadium',     time: 'Sat 7:35 PM', result: null },
+      { home: 'tigers',  away: 'eels',     homeOdds: 2.10, awayOdds: 1.75, venue: 'Leichhardt Oval', time: 'Sun 2:00 PM', result: null },
+      { home: 'warriors',away: 'bulldogs', homeOdds: 1.70, awayOdds: 2.15, venue: 'Go Media Stadium',time: 'Sun 4:05 PM', result: null },
+    ],
+  },
+};
+
+const LEADERBOARD_DATA = [
+  { name: 'Jake T.',    avatar: 'JT', color: '#0052cc', score: 62, margin: 412 },
+  { name: 'Sarah M.',   avatar: 'SM', color: '#7c3aed', score: 60, margin: 398 },
+  { name: 'You',        avatar: 'ME', color: '#f59e0b', score: 57, margin: 371, me: true },
+  { name: 'Chris B.',   avatar: 'CB', color: '#059669', score: 55, margin: 350 },
+  { name: 'Lauren K.',  avatar: 'LK', color: '#db2777', score: 53, margin: 340 },
+  { name: 'Mike D.',    avatar: 'MD', color: '#0891b2', score: 51, margin: 320 },
+  { name: 'Priya S.',   avatar: 'PS', color: '#9333ea', score: 49, margin: 305 },
+  { name: 'Tom R.',     avatar: 'TR', color: '#ca8a04', score: 47, margin: 288 },
+];
+
+const ROUND_RESULTS = [
+  { correct: 6, total: 8 },
+  { correct: 5, total: 8 },
+  { correct: 8, total: 9 },
+  { correct: 4, total: 8 },
+  { correct: 7, total: 8 },
+  { correct: 6, total: 8 },
+  { correct: 5, total: 8 },
+  { correct: 8, total: 9 },
+  { correct: 4, total: 8 },
+  { correct: 7, total: 8 },
+  { correct: 5, total: 9 },
+];
+
+// ── State ─────────────────────────────────────────────────────────────────
+let league = 'afl';
+let displayRound = LEAGUES.afl.currentRound;
+let tips = {};   // { matchIndex: 'home'|'away' }
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+function getTeam(id) {
+  return LEAGUES[league].teams.find(t => t.id === id);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ── Render ────────────────────────────────────────────────────────────────
+function render() {
+  renderMatches();
+  renderLeaderboard();
+  renderRoundsGrid();
+  updateRoundLabel();
+}
+
+function updateRoundLabel() {
+  const lbl = `Round ${displayRound}`;
+  document.getElementById('round-title').textContent = lbl;
+  document.getElementById('round-label').textContent = lbl;
+
+  const data = LEAGUES[league];
+  const isCurrentRound = displayRound === data.currentRound;
+  const banner = document.getElementById('tip-banner');
+  const tipped = Object.keys(tips).filter(k => k.startsWith(league + '_r' + displayRound)).length;
+  const total = data.matches.length;
+
+  if (isCurrentRound) {
+    banner.style.display = 'flex';
+    banner.querySelector('strong').textContent = `Round ${displayRound} — Tips close Thursday 7:30 PM`;
+    banner.querySelector('p').textContent = `${tipped} of ${total} games tipped · ${total - tipped} remaining`;
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+function renderMatches() {
+  const data = LEAGUES[league];
+  const list = document.getElementById('matches-list');
+  list.innerHTML = '';
+
+  data.matches.forEach((m, i) => {
+    const home = getTeam(m.home);
+    const away = getTeam(m.away);
+    const tipKey = `${league}_r${displayRound}_${i}`;
+    const tippedSide = tips[tipKey];
+
+    const isPast = displayRound < data.currentRound;
+    const resultText = isPast
+      ? (tippedSide ? (Math.random() > 0.38 ? '✓ Correct' : '✗ Incorrect') : '— Not tipped') : '';
+    const resultClass = isPast
+      ? (tippedSide ? (resultText.startsWith('✓') ? 'correct' : 'incorrect') : 'pending') : 'pending';
+
+    const scoreHTML = isPast
+      ? `<span class="score-badge">${Math.floor(Math.random()*60+60)} – ${Math.floor(Math.random()*60+40)}</span>`
+      : '';
+
+    list.innerHTML += `
+      <div class="match-card">
+        <div class="match-meta">
+          <span>📍 ${m.venue}</span>
+          <span>🕐 ${m.time}</span>
+        </div>
+        <div class="match-teams">
+          <div class="team ${tippedSide === 'home' ? 'tipped' : ''}" onclick="tip(${i}, 'home')">
+            <div class="team-logo" style="background:${home.color}">${home.logo}</div>
+            <div class="team-name">${home.name}</div>
+            <div class="team-odds">$${m.homeOdds.toFixed(2)}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <div class="vs">VS</div>
+            ${scoreHTML}
+          </div>
+          <div class="team ${tippedSide === 'away' ? 'tipped' : ''}" onclick="tip(${i}, 'away')">
+            <div class="team-logo" style="background:${away.color}">${away.logo}</div>
+            <div class="team-name">${away.name}</div>
+            <div class="team-odds">$${m.awayOdds.toFixed(2)}</div>
+          </div>
+        </div>
+        ${isPast && resultText ? `<div class="match-result ${resultClass}">${resultText}</div>` : ''}
+      </div>`;
+  });
+}
+
+function renderLeaderboard() {
+  const lb = document.getElementById('leaderboard');
+  lb.innerHTML = '';
+  const rankColors = ['gold', 'silver', 'bronze'];
+  LEADERBOARD_DATA.forEach((p, i) => {
+    const rankClass = i < 3 ? rankColors[i] : '';
+    lb.innerHTML += `
+      <div class="lb-row ${p.me ? 'me' : ''}">
+        <div class="lb-rank ${rankClass}">${i + 1}</div>
+        <div class="lb-avatar" style="background:${p.color}">${p.avatar}</div>
+        <div class="lb-info">
+          <div class="lb-name">${p.name}${p.me ? ' 👈' : ''}</div>
+          <div class="lb-sub">Margin: ${p.margin}</div>
+        </div>
+        <div class="lb-score">${p.score}</div>
+      </div>`;
+  });
+}
+
+function renderRoundsGrid() {
+  const data = LEAGUES[league];
+  const grid = document.getElementById('rounds-grid');
+  grid.innerHTML = '';
+  for (let r = 1; r <= data.rounds; r++) {
+    let cls = 'future';
+    if (r === data.currentRound) cls = 'current';
+    else if (r < data.currentRound) {
+      const res = ROUND_RESULTS[r - 1] || { correct: 5, total: 8 };
+      const pct = res.correct / res.total;
+      cls = pct >= 0.75 ? 'done-good' : pct >= 0.5 ? 'done-ok' : 'done-bad';
+    }
+    grid.innerHTML += `<div class="round-pip ${cls}" onclick="jumpToRound(${r})" title="Round ${r}">${r}</div>`;
+  }
+}
+
+// ── Interactions ──────────────────────────────────────────────────────────
+function tip(matchIndex, side) {
+  const tipKey = `${league}_r${displayRound}_${matchIndex}`;
+  const data = LEAGUES[league];
+  if (displayRound < data.currentRound) {
+    showToast('This round has already been played.');
+    return;
+  }
+  const prev = tips[tipKey];
+  if (prev === side) {
+    delete tips[tipKey];
+    showToast('Tip removed.');
+  } else {
+    tips[tipKey] = side;
+    const m = data.matches[matchIndex];
+    const teamId = side === 'home' ? m.home : m.away;
+    const team = getTeam(teamId);
+    showToast(`Tipped: ${team.name} ✓`);
+  }
+  renderMatches();
+  updateRoundLabel();
+}
+
+function autoTip() {
+  const data = LEAGUES[league];
+  data.matches.forEach((m, i) => {
+    const tipKey = `${league}_r${displayRound}_${i}`;
+    if (!tips[tipKey]) {
+      tips[tipKey] = m.homeOdds <= m.awayOdds ? 'home' : 'away';
+    }
+  });
+  showToast('Auto-tipped all favourites!');
+  renderMatches();
+  updateRoundLabel();
+}
+
+function changeRound(delta) {
+  const data = LEAGUES[league];
+  displayRound = Math.max(1, Math.min(data.rounds, displayRound + delta));
+  render();
+}
+
+function jumpToRound(r) {
+  displayRound = r;
+  render();
+}
+
+function setLeague(l) {
+  league = l;
+  displayRound = LEAGUES[l].currentRound;
+  tips = {};
+
+  document.getElementById('btn-afl').className = 'league-btn' + (l === 'afl' ? ' active-afl' : '');
+  document.getElementById('btn-nrl').className = 'league-btn' + (l === 'nrl' ? ' active-nrl' : '');
+
+  // Update accent colour for round pips
+  document.documentElement.style.setProperty('--accent-afl-light', l === 'nrl' ? '#e63946' : '#0052cc');
+
+  // Update stats
+  if (l === 'nrl') {
+    document.getElementById('stat-correct').textContent = '49';
+    document.getElementById('stat-accuracy').textContent = '61%';
+    document.getElementById('stat-rank').innerHTML = '5<span style="font-size:1rem;color:var(--text-muted)">/18</span>';
+    document.getElementById('stat-round').innerHTML = '4<span style="font-size:1rem;color:var(--text-muted)">/8</span>';
+    document.getElementById('season-pct').textContent = '41%';
+    document.getElementById('progress-fill').style.width = '41%';
+  } else {
+    document.getElementById('stat-correct').textContent = '57';
+    document.getElementById('stat-accuracy').textContent = '67%';
+    document.getElementById('stat-rank').innerHTML = '3<span style="font-size:1rem;color:var(--text-muted)">/24</span>';
+    document.getElementById('stat-round').innerHTML = '5<span style="font-size:1rem;color:var(--text-muted)">/8</span>';
+    document.getElementById('season-pct').textContent = '52%';
+    document.getElementById('progress-fill').style.width = '52%';
+  }
+
+  render();
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
