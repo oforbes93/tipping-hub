@@ -21,124 +21,77 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-    /* ── Header ── */
     header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      height: 58px;
-      padding: 0 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      height: 58px; padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
     }
-    .logo { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.3px; }
+    .logo { font-size: 1.25rem; font-weight: 800; }
     .logo em { color: var(--accent); font-style: normal; }
-    .logo-sub { font-size: 0.65rem; color: var(--muted); font-weight: 400; margin-left: 6px; vertical-align: middle; }
+    .logo-sub { font-size: 0.62rem; color: var(--muted); font-weight: 400; margin-left: 6px; }
 
-    .league-tabs { display: flex; gap: 4px; }
-    .ltab {
-      padding: 6px 18px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--muted);
-      font-weight: 700;
-      font-size: 0.8rem;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
+    .ltabs { display: flex; gap: 4px; }
+    .ltab { padding: 6px 18px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.15s; }
     .ltab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 
-    /* ── Container / Grid ── */
     .wrap { max-width: 1060px; margin: 0 auto; padding: 24px 18px; }
     .layout { display: grid; grid-template-columns: 1fr 290px; gap: 20px; align-items: start; }
     @media (max-width: 820px) { .layout { grid-template-columns: 1fr; } }
 
-    /* ── Stat chips ── */
+    /* Stats */
     .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 22px; }
     @media (max-width: 600px) { .stat-row { grid-template-columns: repeat(2, 1fr); } }
-    .chip {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      padding: 13px 15px;
-    }
+    .chip { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 13px 15px; }
     .chip-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
     .chip-value { font-size: 1.45rem; font-weight: 800; margin-top: 3px; line-height: 1; }
     .chip-sub { font-size: 0.65rem; color: var(--muted); margin-top: 3px; }
 
-    /* ── Round bar ── */
+    /* Round nav */
     .round-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
     .round-bar h2 { font-size: 0.95rem; font-weight: 700; }
     .rnav { display: flex; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 5px 10px; }
-    .rnav button { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1rem; padding: 1px 5px; border-radius: 4px; transition: color 0.1s; }
+    .rnav button { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1rem; padding: 1px 5px; transition: color 0.1s; }
     .rnav button:hover { color: var(--text); }
-    .rnav span { font-weight: 700; font-size: 0.82rem; min-width: 58px; text-align: center; color: var(--text); }
+    .rnav span { font-weight: 700; font-size: 0.82rem; min-width: 58px; text-align: center; }
 
-    /* ── Loading / Error ── */
-    .loading {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 64px 20px; gap: 14px; color: var(--muted); font-size: 0.85rem;
-    }
+    /* Loading */
+    .loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 64px 20px; gap: 14px; color: var(--muted); font-size: 0.85rem; }
     .spinner { width: 30px; height: 30px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.75s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .error-box { padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); color: var(--muted); font-size: 0.82rem; text-align: center; }
+    .error-box { padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); color: var(--muted); font-size: 0.82rem; text-align: center; line-height: 1.7; }
     .error-box a { color: var(--accent); }
 
-    /* ── Prediction cards ── */
+    /* Cards */
     .cards { display: flex; flex-direction: column; gap: 11px; }
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      overflow: hidden;
-      transition: border-color 0.2s;
-    }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; transition: border-color 0.2s; }
     .card:hover { border-color: #2e3558; }
     .card.is-live { border-color: var(--win); }
     .card.model-right { border-left: 3px solid var(--win); }
-    .card.model-wrong { border-left: 3px solid var(--loss); }
+    .card.model-wrong  { border-left: 3px solid var(--loss); }
 
-    .card-meta {
-      padding: 9px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.68rem;
-      color: var(--muted);
-    }
+    .card-meta { padding: 9px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); font-size: 0.68rem; color: var(--muted); }
     .card-meta-left { display: flex; gap: 10px; align-items: center; }
-    .live-pill { background: var(--win); color: #000; font-weight: 800; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.5px; animation: blink 1.8s ease-in-out infinite; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.55} }
+    .live-pill { background: var(--win); color: #000; font-weight: 800; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; animation: blink 1.8s ease-in-out infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.5} }
 
     .card-body { padding: 15px 16px; }
 
-    /* Matchup row */
+    /* Matchup */
     .matchup { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; margin-bottom: 14px; }
     .team { display: flex; align-items: center; gap: 9px; }
     .team.away { flex-direction: row-reverse; }
-    .emblem { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 900; color: #fff; flex-shrink: 0; letter-spacing: -0.5px; }
+    .emblem { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 900; color: #fff; flex-shrink: 0; }
     .team-name { font-size: 0.88rem; font-weight: 700; line-height: 1.2; }
     .team.away .team-name { text-align: right; }
     .score-mid { text-align: center; }
     .score-mid .scores { font-size: 1rem; font-weight: 800; letter-spacing: 1px; }
     .score-mid .scores.live { color: var(--win); }
-    .score-mid .slabel { font-size: 0.58rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .score-mid .slabel { font-size: 0.58rem; color: var(--muted); text-transform: uppercase; }
 
-    /* Probability bar */
-    .prob-wrap { margin-bottom: 11px; }
-    .prob-bar {
-      height: 7px;
-      border-radius: 999px;
-      display: flex;
-      overflow: hidden;
-      background: var(--surface2);
-      margin-bottom: 6px;
-    }
+    /* Prob bar */
+    .prob-wrap { margin-bottom: 10px; }
+    .prob-bar { height: 7px; border-radius: 999px; display: flex; overflow: hidden; background: var(--surface2); margin-bottom: 6px; }
     .pb-home { height: 100%; border-radius: 999px 0 0 999px; transition: width 0.5s ease; }
     .pb-away { flex: 1; height: 100%; border-radius: 0 999px 999px 0; }
     .prob-nums { display: flex; justify-content: space-between; font-size: 0.75rem; }
@@ -148,16 +101,40 @@
     .pval.fav { color: var(--accent); }
     .pname { font-size: 0.6rem; color: var(--muted); }
 
-    /* Verdict */
-    .verdict {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--surface2);
-      border-radius: 8px;
-      padding: 8px 12px;
-      margin-bottom: 9px;
+    /* Implied odds row */
+    .odds-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 7px 10px; background: var(--surface2); border-radius: 7px;
+      margin-bottom: 9px; font-size: 0.78rem;
     }
+    .odds-team { display: flex; flex-direction: column; gap: 2px; }
+    .odds-team.right { align-items: flex-end; }
+    .odds-price { font-size: 1rem; font-weight: 800; color: var(--warn); }
+    .odds-price.dim { color: var(--muted); font-size: 0.85rem; }
+    .odds-tag { font-size: 0.58rem; color: var(--muted); letter-spacing: 0.3px; }
+    .odds-center { font-size: 0.62rem; color: var(--muted); text-align: center; }
+
+    /* Model vote */
+    .vote-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 7px 10px; border-radius: 7px; margin-bottom: 9px;
+      border: 1px solid var(--border);
+      font-size: 0.75rem;
+    }
+    .vote-row.unanimous { border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.04); }
+    .vote-row.split     { border-color: rgba(245,158,11,0.3);  background: rgba(245,158,11,0.04); }
+    .vote-row.leaning   { border-color: var(--border); }
+    .vote-left { display: flex; align-items: center; gap: 7px; }
+    .vote-icon { font-size: 0.9rem; }
+    .vote-text { color: var(--muted); }
+    .vote-text strong { color: var(--text); }
+    .vote-count { font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 999px; }
+    .vote-count.unanimous { background: rgba(16,185,129,0.15); color: var(--win); }
+    .vote-count.split     { background: rgba(245,158,11,0.15);  color: var(--warn); }
+    .vote-count.leaning   { background: rgba(59,130,246,0.12);  color: var(--accent); }
+
+    /* Verdict */
+    .verdict { display: flex; align-items: center; justify-content: space-between; background: var(--surface2); border-radius: 8px; padding: 8px 12px; margin-bottom: 9px; }
     .verdict-left { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; }
     .verdict-left strong { color: var(--text); font-weight: 700; }
     .verdict-left span { color: var(--muted); }
@@ -170,21 +147,23 @@
     .factors { display: flex; flex-wrap: wrap; gap: 5px; }
     .factor { font-size: 0.63rem; padding: 3px 8px; border-radius: 999px; background: rgba(59,130,246,0.07); border: 1px solid rgba(59,130,246,0.15); color: var(--muted); }
 
-    /* Result banner */
+    /* Result */
     .result-banner { text-align: center; padding: 7px; font-size: 0.75rem; font-weight: 600; margin-top: 10px; border-top: 1px solid var(--border); }
     .result-banner.correct { color: var(--win); background: rgba(16,185,129,0.05); }
     .result-banner.wrong   { color: var(--loss); background: rgba(239,68,68,0.05); }
-
-    /* No prediction notice */
     .no-pred { text-align: center; padding: 10px; font-size: 0.75rem; color: var(--muted); }
 
-    /* ── Sidebar ── */
+    /* Sidebar */
     .sidebar { display: flex; flex-direction: column; gap: 14px; }
     .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 16px; }
     .panel-title { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.9px; color: var(--muted); margin-bottom: 12px; }
-
     .model-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); border-radius: 6px; padding: 5px 9px; font-size: 0.72rem; color: var(--accent); font-weight: 600; margin-bottom: 9px; }
     .model-desc { font-size: 0.72rem; color: var(--muted); line-height: 1.65; }
+    .model-link { display: inline-flex; align-items: center; gap: 4px; margin-top: 10px; font-size: 0.7rem; color: var(--accent); text-decoration: none; }
+    .model-link:hover { text-decoration: underline; }
+
+    /* Odds disclaimer */
+    .odds-note { margin-top: 10px; font-size: 0.65rem; color: var(--muted); line-height: 1.5; padding: 8px; background: var(--surface2); border-radius: 6px; }
 
     /* Ladder */
     .ladder { width: 100%; border-collapse: collapse; }
@@ -196,9 +175,9 @@
     .ladder td.pts { color: var(--accent); font-weight: 800; }
     .finals-line { border-top: 2px solid var(--warn) !important; }
 
-    /* Accuracy history */
+    /* Acc grid */
     .acc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(30px,1fr)); gap: 4px; margin-top: 10px; }
-    .acc-pip { aspect-ratio: 1; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 700; cursor: default; }
+    .acc-pip { aspect-ratio: 1; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 700; }
     .pip-good { background: rgba(16,185,129,0.2); color: var(--win); }
     .pip-ok   { background: rgba(245,158,11,0.2);  color: var(--warn); }
     .pip-bad  { background: rgba(239,68,68,0.18);  color: var(--loss); }
@@ -210,9 +189,9 @@
 
 <header>
   <div class="logo">Tipping<em>Hub</em><span class="logo-sub">prediction engine</span></div>
-  <div class="league-tabs">
+  <div class="ltabs">
     <button class="ltab active" id="tab-afl" onclick="setLeague('afl')">AFL</button>
-    <button class="ltab" id="tab-nrl" onclick="setLeague('nrl')">NRL</button>
+    <button class="ltab"        id="tab-nrl" onclick="setLeague('nrl')">NRL</button>
   </div>
 </header>
 
@@ -236,12 +215,11 @@
     <div class="chip">
       <div class="chip-label">Models</div>
       <div class="chip-value" id="s-models" style="color:#8b5cf6">—</div>
-      <div class="chip-sub" id="s-models-sub">aggregated</div>
+      <div class="chip-sub" id="s-models-sub">aggregated (AFL)</div>
     </div>
   </div>
 
   <div class="layout">
-    <!-- Main -->
     <div>
       <div class="round-bar">
         <h2 id="rh">Round —</h2>
@@ -256,16 +234,19 @@
       </div>
     </div>
 
-    <!-- Sidebar -->
     <div class="sidebar">
       <div class="panel">
         <div class="panel-title">Prediction Model</div>
         <div class="model-tag">⚡ <span id="model-name">Squiggle Aggregate</span></div>
-        <div class="model-desc" id="model-desc">Predictions aggregated from all independent AFL forecasting models submitted to the Squiggle API. Win probabilities represent the consensus across every model that has lodged tips for this round.</div>
+        <div class="model-desc" id="model-desc">Loading model description…</div>
+        <a class="model-link" id="team-lists-link" href="https://www.afl.com.au/matches/team-lists" target="_blank">📋 View Team Lists →</a>
+        <div class="odds-note">
+          💡 <strong>Fair odds</strong> shown are model-implied prices (no bookmaker margin). Compare to Sportsbet or TAB to identify value.
+        </div>
       </div>
 
       <div class="panel">
-        <div class="panel-title" id="ladder-title">AFL Ladder</div>
+        <div class="panel-title" id="ladder-title">Ladder</div>
         <div id="ladder"><div style="color:var(--muted);font-size:0.78rem">Loading…</div></div>
       </div>
 
@@ -278,51 +259,31 @@
 </div>
 
 <script>
-// ── Config ────────────────────────────────────────────────────────────────
+// ── API endpoints ─────────────────────────────────────────────────────────
 const SQUIGGLE = 'https://api.squiggle.com.au/';
-const TSDB     = 'https://www.thesportsdb.com/api/v1/json/3/';
-const NRL_ID   = '4956'; // TheSportsDB league ID for NRL
+const ESPN     = 'https://site.api.espn.com/apis/site/v2/sports/rugby-league/nrl/';
+const ESPN_STD = 'https://site.web.api.espn.com/apis/v2/sports/rugby-league/nrl/standings';
 
-// AFL team colours / abbreviations
+// ── AFL team metadata ─────────────────────────────────────────────────────
 const AFL_META = {
-  'Adelaide':             { c: '#002b5c', a: 'ADE' },
-  'Brisbane Lions':       { c: '#a30046', a: 'BRI' },
-  'Carlton':              { c: '#003087', a: 'CAR' },
-  'Collingwood':          { c: '#1c1c1c', a: 'COL' },
-  'Essendon':             { c: '#cc2031', a: 'ESS' },
-  'Fremantle':            { c: '#2a1a5e', a: 'FRE' },
-  'Geelong':              { c: '#1c3c6b', a: 'GEE' },
-  'Gold Coast':           { c: '#c8151b', a: 'GCS' },
+  'Adelaide':               { c: '#002b5c', a: 'ADE' },
+  'Brisbane Lions':         { c: '#a30046', a: 'BRI' },
+  'Carlton':                { c: '#003087', a: 'CAR' },
+  'Collingwood':            { c: '#1c1c1c', a: 'COL' },
+  'Essendon':               { c: '#cc2031', a: 'ESS' },
+  'Fremantle':              { c: '#2a1a5e', a: 'FRE' },
+  'Geelong':                { c: '#1c3c6b', a: 'GEE' },
+  'Gold Coast':             { c: '#c8151b', a: 'GCS' },
   'Greater Western Sydney': { c: '#f47920', a: 'GWS' },
-  'Hawthorn':             { c: '#4d2004', a: 'HAW' },
-  'Melbourne':            { c: '#cc2031', a: 'MEL' },
-  'North Melbourne':      { c: '#003087', a: 'NOR' },
-  'Port Adelaide':        { c: '#008aab', a: 'POR' },
-  'Richmond':             { c: '#1a1a1a', a: 'RIC' },
-  'St Kilda':             { c: '#ed0f05', a: 'STK' },
-  'Sydney':               { c: '#e2001a', a: 'SYD' },
-  'West Coast':           { c: '#002b5c', a: 'WCE' },
-  'Western Bulldogs':     { c: '#014896', a: 'WBD' },
-};
-
-const NRL_META = {
-  'Melbourne Storm':                  { c: '#5e259b', a: 'STO' },
-  'Sydney Roosters':                  { c: '#003a78', a: 'ROO' },
-  'Penrith Panthers':                 { c: '#8b0021', a: 'PAN' },
-  'Brisbane Broncos':                 { c: '#6f263d', a: 'BRO' },
-  'Canberra Raiders':                 { c: '#5b8c28', a: 'RAI' },
-  'Manly-Warringah Sea Eagles':       { c: '#6f0026', a: 'SEA' },
-  'South Sydney Rabbitohs':           { c: '#007a4d', a: 'RAB' },
-  'Cronulla-Sutherland Sharks':       { c: '#00a0c6', a: 'SHA' },
-  'Gold Coast Titans':                { c: '#009fd8', a: 'TIT' },
-  'North Queensland Cowboys':         { c: '#003b8e', a: 'COW' },
-  'St George Illawarra Dragons':      { c: '#e4002b', a: 'DRA' },
-  'Newcastle Knights':                { c: '#003087', a: 'KNI' },
-  'Wests Tigers':                     { c: '#f47920', a: 'TIG' },
-  'Parramatta Eels':                  { c: '#003087', a: 'EEL' },
-  'New Zealand Warriors':             { c: '#009bde', a: 'WAR' },
-  'Canterbury-Bankstown Bulldogs':    { c: '#0057b8', a: 'BUL' },
-  'Dolphins':                         { c: '#d24600', a: 'DOL' },
+  'Hawthorn':               { c: '#4d2004', a: 'HAW' },
+  'Melbourne':              { c: '#cc2031', a: 'MEL' },
+  'North Melbourne':        { c: '#003087', a: 'NOR' },
+  'Port Adelaide':          { c: '#008aab', a: 'POR' },
+  'Richmond':               { c: '#1a1a1a', a: 'RIC' },
+  'St Kilda':               { c: '#ed0f05', a: 'STK' },
+  'Sydney':                 { c: '#e2001a', a: 'SYD' },
+  'West Coast':             { c: '#002b5c', a: 'WCE' },
+  'Western Bulldogs':       { c: '#014896', a: 'WBD' },
 };
 
 // ── State ─────────────────────────────────────────────────────────────────
@@ -330,12 +291,11 @@ let league = 'afl';
 let currentRound = 1;
 let maxRound = 24;
 
-// ── Utilities ─────────────────────────────────────────────────────────────
-const year = () => new Date().getFullYear();
+// ── Helpers ───────────────────────────────────────────────────────────────
+const yr = () => new Date().getFullYear();
 
-function teamMeta(name, lg) {
-  const map = lg === 'afl' ? AFL_META : NRL_META;
-  return map[name] || { c: '#2e3a5c', a: name.substring(0, 3).toUpperCase() };
+function aflMeta(name) {
+  return AFL_META[name] || { c: '#2e3a5c', a: name.substring(0, 3).toUpperCase() };
 }
 
 function fmtDate(str) {
@@ -350,61 +310,83 @@ function fmtDate(str) {
 
 function confInfo(hProb) {
   const gap = Math.abs(hProb - 50);
-  if (gap >= 20) return { label: 'High',   cls: 'conf-high' };
-  if (gap >= 10) return { label: 'Medium', cls: 'conf-med'  };
-  return               { label: 'Low',    cls: 'conf-low'  };
+  if (gap >= 20) return { label: 'High confidence',   cls: 'conf-high' };
+  if (gap >= 10) return { label: 'Medium confidence', cls: 'conf-med'  };
+  return               { label: 'Low confidence',    cls: 'conf-low'  };
 }
 
-// Aggregate Squiggle tips by game — average hconfidence across all models
+// Convert win probability to implied fair odds (no margin)
+function impliedOdds(prob) {
+  if (!prob || prob <= 0) return '—';
+  return '$' + (1 / (prob / 100)).toFixed(2);
+}
+
+// Aggregate Squiggle tips: average hconfidence + tally votes
 function aggregateTips(tips) {
   const g = {};
   tips.forEach(t => {
     if (t.hconfidence == null) return;
-    if (!g[t.gameid]) g[t.gameid] = { tips: [], hteam: t.hteam, ateam: t.ateam };
-    g[t.gameid].tips.push(parseFloat(t.hconfidence));
+    if (!g[t.gameid]) g[t.gameid] = { confs: [], hTips: 0, aTips: 0 };
+    g[t.gameid].confs.push(parseFloat(t.hconfidence));
+    // Which team did this model tip?
+    if (t.tip === t.hteam) g[t.gameid].hTips++;
+    else                   g[t.gameid].aTips++;
   });
   const out = {};
   Object.entries(g).forEach(([gid, d]) => {
-    const avg = d.tips.reduce((s, v) => s + v, 0) / d.tips.length;
-    out[gid] = { hProb: avg, aProb: 100 - avg, n: d.tips.length };
+    const avg = d.confs.reduce((s, v) => s + v, 0) / d.confs.length;
+    out[gid] = {
+      hProb:  avg,
+      aProb:  100 - avg,
+      n:      d.confs.length,
+      hTips:  d.hTips,
+      aTips:  d.aTips,
+    };
   });
   return out;
 }
 
-// Simple ELO-based NRL prediction from ladder position
-function nrlProb(homeTeam, awayTeam, standings) {
-  const pos = name => {
-    const s = standings.find(t => name.includes((t.strTeam || '').split(' ').pop()) ||
-                                   (t.strTeam || '').includes(name.split(' ').pop()));
-    return s ? parseInt(s.intRank || s.intPosition || 9) : 9;
-  };
-  const n = standings.length || 17;
-  const eloH = (n + 1 - pos(homeTeam)) * 30 + 45; // home bonus
-  const eloA = (n + 1 - pos(awayTeam)) * 30;
-  const prob = 1 / (1 + Math.pow(10, (eloA - eloH) / 400));
-  return Math.min(Math.max(prob * 100, 18), 82);
+// Build the model vote HTML (key team-news proxy)
+function voteHTML(pred, hteam, ateam) {
+  if (!pred) return '';
+  const { hTips, aTips, n } = pred;
+  const favTeam = hTips >= aTips ? hteam : ateam;
+  const favCount = Math.max(hTips, aTips);
+  const pct = favCount / n;
+  let cls = 'leaning', badge = 'leaning', icon = '🔵';
+  if (pct === 1)     { cls = 'unanimous'; badge = 'unanimous'; icon = '✅'; }
+  else if (pct < 0.6){ cls = 'split';     badge = 'split';     icon = '⚠️'; }
+  const shortTeam = favTeam.split(' ').pop();
+  return `
+    <div class="vote-row ${cls}">
+      <div class="vote-left">
+        <span class="vote-icon">${icon}</span>
+        <span class="vote-text">${cls === 'split' ? 'Models split — check team lists' : `<strong>${favCount}/${n}</strong> models tip ${shortTeam}`}</span>
+      </div>
+      <span class="vote-count ${badge}">${cls.toUpperCase()}</span>
+    </div>`;
 }
 
-// ── AFL API calls ─────────────────────────────────────────────────────────
+// ── AFL data fetching ─────────────────────────────────────────────────────
 async function aflGames(round) {
-  const r = await fetch(`${SQUIGGLE}?q=games;year=${year()};round=${round}`);
+  const r = await fetch(`${SQUIGGLE}?q=games;year=${yr()};round=${round}`);
   return (await r.json()).games || [];
 }
 async function aflTips(round) {
-  const r = await fetch(`${SQUIGGLE}?q=tips;year=${year()};round=${round}`);
+  const r = await fetch(`${SQUIGGLE}?q=tips;year=${yr()};round=${round}`);
   return (await r.json()).tips || [];
 }
 async function aflStandings(round) {
-  const r = await fetch(`${SQUIGGLE}?q=standings;year=${year()};round=${Math.max(1, round - 1)}`);
+  const r = await fetch(`${SQUIGGLE}?q=standings;year=${yr()};round=${Math.max(1, round - 1)}`);
   return (await r.json()).standings || [];
 }
-async function aflSeasonTips() {
-  const r = await fetch(`${SQUIGGLE}?q=tips;year=${year()}`);
+async function aflAllTips() {
+  const r = await fetch(`${SQUIGGLE}?q=tips;year=${yr()}`);
   return (await r.json()).tips || [];
 }
 async function detectAFLRound() {
   try {
-    const r = await fetch(`${SQUIGGLE}?q=games;year=${year()}`);
+    const r = await fetch(`${SQUIGGLE}?q=games;year=${yr()}`);
     const games = (await r.json()).games || [];
     if (!games.length) return 1;
     const incomplete = games.filter(g => g.complete < 100);
@@ -414,94 +396,172 @@ async function detectAFLRound() {
   } catch { return 1; }
 }
 
-// ── NRL API calls ─────────────────────────────────────────────────────────
-async function nrlEvents(round) {
-  const r = await fetch(`${TSDB}eventsround.php?id=${NRL_ID}&r=${round}&s=${year()}`);
+// ── NRL data fetching (ESPN public API) ───────────────────────────────────
+async function espnNRLGames(round) {
+  const url = `${ESPN}scoreboard?week=${round}&season=${yr()}&seasontype=2`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`ESPN returned HTTP ${r.status}`);
   return (await r.json()).events || [];
 }
-async function nrlTable() {
-  const r = await fetch(`${TSDB}lookuptable.php?l=${NRL_ID}&s=${year()}`);
-  return (await r.json()).table || [];
-}
-function detectNRLRound() {
-  // Estimate from calendar — NRL starts first week of March
-  const now  = new Date();
-  const start = new Date(now.getFullYear(), 2, 6); // Mar 6
-  const weeks = Math.floor((now - start) / (7 * 86400000));
-  return Math.max(1, Math.min(27, weeks + 1));
+
+async function espnNRLStandings() {
+  const r = await fetch(`${ESPN_STD}?season=${yr()}`);
+  if (!r.ok) throw new Error(`ESPN standings HTTP ${r.status}`);
+  const data = await r.json();
+  // ESPN standings can be nested under children or directly
+  const entries =
+    data?.children?.[0]?.standings?.entries ||
+    data?.standings?.entries ||
+    [];
+  return entries.map((e, i) => {
+    const stat = name => {
+      const s = (e.stats || []).find(x => x.name === name || x.abbreviation === name);
+      return s ? (s.value ?? s.displayValue ?? '—') : '—';
+    };
+    return {
+      rank:   i + 1,
+      name:   e.team?.displayName || e.team?.name || '?',
+      abbr:   e.team?.abbreviation || '?',
+      color:  e.team?.color ? '#' + e.team.color : '#2e3a5c',
+      played: stat('gamesPlayed') ?? stat('GP'),
+      wins:   stat('wins')        ?? stat('W'),
+      pts:    stat('points')      ?? stat('PTS'),
+    };
+  });
 }
 
-// ── Render: AFL ───────────────────────────────────────────────────────────
-function renderAFL(games, tipMap, conf) {
+// Parse a single ESPN NRL event into a clean object
+function parseESPNEvent(ev) {
+  const comp = ev.competitions?.[0];
+  const home = comp?.competitors?.find(c => c.homeAway === 'home');
+  const away = comp?.competitors?.find(c => c.homeAway === 'away');
+  const statusName = comp?.status?.type?.name || '';
+  return {
+    id:        ev.id,
+    date:      ev.date,
+    venue:     comp?.venue?.fullName || 'TBA',
+    homeTeam:  home?.team?.displayName || home?.team?.name || '?',
+    awayTeam:  away?.team?.displayName || away?.team?.name || '?',
+    homeAbbr:  home?.team?.abbreviation || '?',
+    awayAbbr:  away?.team?.abbreviation || '?',
+    homeColor: home?.team?.color ? '#' + home.team.color : '#2e3a5c',
+    awayColor: away?.team?.color ? '#' + away.team.color : '#2e3a5c',
+    homeScore: home?.score ?? null,
+    awayScore: away?.score ?? null,
+    isLive:    statusName === 'STATUS_IN_PROGRESS',
+    isDone:    statusName === 'STATUS_FINAL' || comp?.status?.type?.completed === true,
+  };
+}
+
+async function detectNRLRound() {
+  try {
+    const r = await fetch(`${ESPN}scoreboard?season=${yr()}&seasontype=2`);
+    const data = await r.json();
+    if (data?.week?.number) return data.week.number;
+  } catch { /* fall through */ }
+  // Estimate from calendar — NRL starts first week of March
+  const now   = new Date();
+  const start = new Date(now.getFullYear(), 2, 6);
+  return Math.max(1, Math.min(27, Math.floor((now - start) / (7 * 86400000)) + 1));
+}
+
+// ELO model for NRL: ladder position + home advantage
+function nrlProb(homeAbbr, homeName, awayAbbr, awayName, standings) {
+  const pos = (abbr, name) => {
+    const s = standings.find(t =>
+      t.abbr === abbr ||
+      t.name === name ||
+      t.name?.split(' ').pop() === name?.split(' ').pop()
+    );
+    return s ? s.rank : Math.ceil((standings.length || 17) / 2);
+  };
+  const n  = standings.length || 17;
+  const hp = pos(homeAbbr, homeName);
+  const ap = pos(awayAbbr, awayName);
+  const eloH = (n + 1 - hp) * 30 + 45; // +45 home advantage
+  const eloA = (n + 1 - ap) * 30;
+  const p = 1 / (1 + Math.pow(10, (eloA - eloH) / 400));
+  return Math.min(Math.max(p * 100, 15), 85);
+}
+
+// ── Render: AFL cards ─────────────────────────────────────────────────────
+function renderAFL(games, tipMap, acc) {
   const el = document.getElementById('games');
   if (!games.length) {
-    el.innerHTML = `<div class="error-box">No AFL games found for Round ${currentRound}. The round may not be scheduled yet.</div>`;
+    el.innerHTML = `<div class="error-box">No AFL games found for Round ${currentRound}.</div>`;
     return;
   }
 
   let totalConf = 0, n = 0;
   const html = games.map(g => {
-    const pred   = tipMap[g.id];
-    const hProb  = pred ? pred.hProb : null;
-    const aProb  = pred ? pred.aProb : null;
+    const pred  = tipMap[g.id];
+    const hProb = pred ? pred.hProb : null;
+    const aProb = pred ? pred.aProb : null;
     const isLive = g.complete > 0 && g.complete < 100;
     const isDone = g.complete >= 100;
-    const hm = teamMeta(g.hteam, 'afl');
-    const am = teamMeta(g.ateam, 'afl');
+    const hm = aflMeta(g.hteam);
+    const am = aflMeta(g.ateam);
 
-    let cardClass = '';
+    let cardClass = isLive ? 'is-live' : '';
     if (isDone && pred) {
-      const modelTip = hProb >= 50 ? g.hteam : g.ateam;
-      cardClass = g.winner === modelTip ? 'model-right' : 'model-wrong';
+      const tipped = hProb >= 50 ? g.hteam : g.ateam;
+      cardClass = g.winner === tipped ? 'model-right' : 'model-wrong';
     }
-    if (isLive) cardClass = 'is-live';
 
-    // Score middle
+    // Middle score/vs
     let mid = '';
     if (isLive) mid = `<div class="score-mid"><div class="scores live">${g.hscore ?? 0} – ${g.ascore ?? 0}</div><div class="slabel">Live</div></div>`;
     else if (isDone) mid = `<div class="score-mid"><div class="scores">${g.hscore} – ${g.ascore}</div><div class="slabel">Final</div></div>`;
     else mid = `<div style="font-size:0.7rem;font-weight:700;color:var(--muted)">VS</div>`;
 
-    // Prob section
-    let probHtml = '';
+    // Prediction section
+    let predHtml = '';
     if (pred) {
       totalConf += Math.max(hProb, aProb); n++;
       const { label, cls } = confInfo(hProb);
       const tipped = hProb >= 50 ? g.hteam : g.ateam;
       const icon   = hProb >= 50 ? '🏠' : '✈️';
-      const factors = buildFactorsAFL(hProb, isLive, g, pred.n);
+      const hOdds  = impliedOdds(hProb);
+      const aOdds  = impliedOdds(aProb);
+      const factors = buildAFLFactors(hProb, isLive, pred.n);
 
-      probHtml = `
+      predHtml = `
         <div class="prob-wrap">
           <div class="prob-bar">
-            <div class="pb-home" style="width:${hProb.toFixed(1)}%; background:${hProb >= 50 ? hm.c : am.c}"></div>
-            <div class="pb-away" style="background:${aProb > 50 ? am.c : hm.c}; opacity:0.35"></div>
+            <div class="pb-home" style="width:${hProb.toFixed(1)}%;background:${hProb >= 50 ? hm.c : am.c}"></div>
+            <div class="pb-away" style="background:${aProb > 50 ? am.c : hm.c};opacity:0.35"></div>
           </div>
           <div class="prob-nums">
-            <div class="pnum">
-              <span class="pval ${hProb >= 50 ? 'fav' : ''}">${hProb.toFixed(0)}%</span>
-              <span class="pname">${g.hteam.split(' ').pop()}</span>
-            </div>
-            <div class="pnum right">
-              <span class="pval ${aProb > 50 ? 'fav' : ''}">${aProb.toFixed(0)}%</span>
-              <span class="pname">${g.ateam.split(' ').pop()}</span>
-            </div>
+            <div class="pnum"><span class="pval ${hProb >= 50 ? 'fav':''}">${hProb.toFixed(0)}%</span><span class="pname">${g.hteam.split(' ').pop()}</span></div>
+            <div class="pnum right"><span class="pval ${aProb > 50 ? 'fav':''}">${aProb.toFixed(0)}%</span><span class="pname">${g.ateam.split(' ').pop()}</span></div>
           </div>
         </div>
+        <div class="odds-row">
+          <div class="odds-team">
+            <span class="odds-price ${hProb >= 50 ? '' : 'dim'}">${hOdds}</span>
+            <span class="odds-tag">${g.hteam.split(' ').pop()} fair odds</span>
+          </div>
+          <div class="odds-center">model fair price<br><span style="font-size:0.55rem;opacity:0.6">vs bookmaker odds</span></div>
+          <div class="odds-team right">
+            <span class="odds-price ${aProb > 50 ? '' : 'dim'}">${aOdds}</span>
+            <span class="odds-tag">${g.ateam.split(' ').pop()} fair odds</span>
+          </div>
+        </div>
+        ${voteHTML(pred, g.hteam, g.ateam)}
         <div class="verdict">
           <div class="verdict-left">${icon} <span>Model tips: <strong>${tipped}</strong></span></div>
-          <span class="conf-pill ${cls}">${label} confidence</span>
+          <span class="conf-pill ${cls}">${label}</span>
         </div>
         <div class="factors">${factors.map(f => `<span class="factor">${f}</span>`).join('')}</div>`;
     } else {
-      probHtml = `<div class="no-pred">Predictions not yet available for this game</div>`;
+      predHtml = `<div class="no-pred">Predictions not yet available — models update after team selection (Thu)</div>`;
     }
 
     // Result banner
     let resultHtml = '';
     if (isDone && pred) {
-      const modelTip = hProb >= 50 ? g.hteam : g.ateam;
-      const right = g.winner === modelTip;
+      const tipped = hProb >= 50 ? g.hteam : g.ateam;
+      const right  = g.winner === tipped;
       resultHtml = `<div class="result-banner ${right ? 'correct' : 'wrong'}">
         ${right ? '✓ Model correct' : '✗ Model incorrect'} — ${g.hteam} ${g.hscore} – ${g.ascore} ${g.ateam}
       </div>`;
@@ -515,21 +575,15 @@ function renderAFL(games, tipMap, conf) {
           <span>📍 ${g.venue || 'TBA'}</span>
           <span>🕐 ${fmtDate(g.date)}</span>
         </div>
-        ${pred ? `<span style="font-size:0.62rem;color:var(--muted)">${pred.n} model${pred.n !== 1 ? 's' : ''}</span>` : ''}
+        ${pred ? `<span style="font-size:0.62rem;color:var(--muted)">${pred.n} model${pred.n!==1?'s':''}</span>` : ''}
       </div>
       <div class="card-body">
         <div class="matchup">
-          <div class="team">
-            <div class="emblem" style="background:${hm.c}">${hm.a}</div>
-            <div class="team-name">${g.hteam}</div>
-          </div>
+          <div class="team"><div class="emblem" style="background:${hm.c}">${hm.a}</div><div class="team-name">${g.hteam}</div></div>
           ${mid}
-          <div class="team away">
-            <div class="emblem" style="background:${am.c}">${am.a}</div>
-            <div class="team-name">${g.ateam}</div>
-          </div>
+          <div class="team away"><div class="emblem" style="background:${am.c}">${am.a}</div><div class="team-name">${g.ateam}</div></div>
         </div>
-        ${probHtml}
+        ${predHtml}
       </div>
       ${resultHtml}
     </div>`;
@@ -539,115 +593,110 @@ function renderAFL(games, tipMap, conf) {
 
   if (n > 0) {
     document.getElementById('s-conf').textContent = (totalConf / n).toFixed(0) + '%';
-    document.getElementById('s-conf-sub').textContent = `avg across ${n} game${n !== 1 ? 's' : ''}`;
+    document.getElementById('s-conf-sub').textContent = `avg across ${n} game${n!==1?'s':''}`;
   }
-
-  if (conf) {
-    document.getElementById('s-acc').textContent = conf.pct + '%';
-    document.getElementById('s-acc-sub').textContent = `${conf.correct} / ${conf.total} correct`;
+  if (acc) {
+    document.getElementById('s-acc').textContent = acc.pct + '%';
+    document.getElementById('s-acc-sub').textContent = `${acc.correct}/${acc.total} correct`;
   }
 }
 
-function buildFactorsAFL(hProb, isLive, g, modelCount) {
+function buildAFLFactors(hProb, isLive, modelCount) {
   const f = [];
-  f.push(`📍 ${hProb >= 50 ? 'Home' : 'Away'} side favoured`);
-  if (modelCount > 1) f.push(`🤝 ${modelCount} models agree`);
+  f.push(`📍 ${hProb >= 50 ? 'Home' : 'Away'} team favoured`);
+  if (modelCount >= 8) f.push(`🤝 Strong model consensus`);
   const gap = Math.abs(hProb - 50);
-  if (gap < 8) f.push('⚖️ Very tight contest');
-  else if (gap >= 25) f.push('💪 Strong favourite');
-  if (isLive) f.push('🔴 Game in progress');
+  if (gap < 8)  f.push('⚖️ Coin-flip contest');
+  if (gap >= 25) f.push('💪 Heavy favourite');
+  if (isLive)   f.push('🔴 Game in progress');
+  f.push('📋 Accounts for team selections');
   return f;
 }
 
-// ── Render: NRL ───────────────────────────────────────────────────────────
+// ── Render: NRL cards ─────────────────────────────────────────────────────
 function renderNRL(events, standings) {
   const el = document.getElementById('games');
   if (!events.length) {
-    el.innerHTML = `<div class="error-box">No NRL games found for Round ${currentRound}. The round may not be scheduled yet or the season hasn't started.</div>`;
+    el.innerHTML = `<div class="error-box">No NRL games found for Round ${currentRound}.<br>The round may not be scheduled yet or the season hasn't started.</div>`;
     return;
   }
 
   let totalConf = 0;
   const html = events.map(ev => {
-    const home  = ev.strHomeTeam;
-    const away  = ev.strAwayTeam;
-    const hProb = nrlProb(home, away, standings);
+    const g = parseESPNEvent(ev);
+    const hProb = nrlProb(g.homeAbbr, g.homeTeam, g.awayAbbr, g.awayTeam, standings);
     const aProb = 100 - hProb;
-    const isDone = ev.intHomeScore != null && ev.intHomeScore !== '' && ev.intHomeScore !== '0';
-    const hm = teamMeta(home, 'nrl');
-    const am = teamMeta(away, 'nrl');
-
     totalConf += Math.max(hProb, aProb);
 
-    const tipped = hProb >= 50 ? home : away;
+    const tipped = hProb >= 50 ? g.homeTeam : g.awayTeam;
     const { label, cls } = confInfo(hProb);
-    const factors = buildFactorsNRL(hProb, home, away, standings);
+    const hOdds = impliedOdds(hProb);
+    const aOdds = impliedOdds(aProb);
+    const factors = buildNRLFactors(hProb, g.homeAbbr, g.homeTeam, g.awayAbbr, g.awayTeam, standings);
 
     let cardClass = '';
-    if (isDone) {
-      const hs = parseInt(ev.intHomeScore);
-      const as_ = parseInt(ev.intAwayScore);
-      const winner = hs > as_ ? home : away;
+    if (g.isDone) {
+      const hw = parseInt(g.homeScore) > parseInt(g.awayScore);
+      const winner = hw ? g.homeTeam : g.awayTeam;
       cardClass = winner === tipped ? 'model-right' : 'model-wrong';
     }
+    if (g.isLive) cardClass = 'is-live';
 
-    const mid = isDone
-      ? `<div class="score-mid"><div class="scores">${ev.intHomeScore} – ${ev.intAwayScore}</div><div class="slabel">Final</div></div>`
-      : `<div style="font-size:0.7rem;font-weight:700;color:var(--muted)">VS</div>`;
+    let mid = '';
+    if (g.isLive) mid = `<div class="score-mid"><div class="scores live">${g.homeScore ?? 0} – ${g.awayScore ?? 0}</div><div class="slabel">Live</div></div>`;
+    else if (g.isDone) mid = `<div class="score-mid"><div class="scores">${g.homeScore} – ${g.awayScore}</div><div class="slabel">Final</div></div>`;
+    else mid = `<div style="font-size:0.7rem;font-weight:700;color:var(--muted)">VS</div>`;
 
     let resultHtml = '';
-    if (isDone) {
-      const hs = parseInt(ev.intHomeScore);
-      const as_ = parseInt(ev.intAwayScore);
-      const winner = hs > as_ ? home : away;
+    if (g.isDone) {
+      const hw = parseInt(g.homeScore) > parseInt(g.awayScore);
+      const winner = hw ? g.homeTeam : g.awayTeam;
       const right = winner === tipped;
       resultHtml = `<div class="result-banner ${right ? 'correct' : 'wrong'}">
-        ${right ? '✓ Model correct' : '✗ Model incorrect'} — ${home} ${hs} – ${as_} ${away}
+        ${right ? '✓ Model correct' : '✗ Model incorrect'} — ${g.homeTeam} ${g.homeScore} – ${g.awayScore} ${g.awayTeam}
       </div>`;
     }
-
-    const dateStr = ev.dateEvent ? fmtDate(ev.dateEvent + (ev.strTime ? 'T' + ev.strTime : '')) : 'TBA';
 
     return `
     <div class="card ${cardClass}">
       <div class="card-meta">
         <div class="card-meta-left">
-          <span>📍 ${ev.strVenue || 'TBA'}</span>
-          <span>🕐 ${dateStr}</span>
+          ${g.isLive ? '<span class="live-pill">LIVE</span>' : ''}
+          <span>📍 ${g.venue}</span>
+          <span>🕐 ${fmtDate(g.date)}</span>
         </div>
         <span style="font-size:0.62rem;color:var(--muted)">ELO model</span>
       </div>
       <div class="card-body">
         <div class="matchup">
-          <div class="team">
-            <div class="emblem" style="background:${hm.c}">${hm.a}</div>
-            <div class="team-name">${home}</div>
-          </div>
+          <div class="team"><div class="emblem" style="background:${g.homeColor}">${g.homeAbbr}</div><div class="team-name">${g.homeTeam}</div></div>
           ${mid}
-          <div class="team away">
-            <div class="emblem" style="background:${am.c}">${am.a}</div>
-            <div class="team-name">${away}</div>
-          </div>
+          <div class="team away"><div class="emblem" style="background:${g.awayColor}">${g.awayAbbr}</div><div class="team-name">${g.awayTeam}</div></div>
         </div>
         <div class="prob-wrap">
           <div class="prob-bar">
-            <div class="pb-home" style="width:${hProb.toFixed(1)}%; background:${hProb >= 50 ? hm.c : am.c}"></div>
-            <div class="pb-away" style="background:${aProb > 50 ? am.c : hm.c}; opacity:0.35"></div>
+            <div class="pb-home" style="width:${hProb.toFixed(1)}%;background:${hProb >= 50 ? g.homeColor : g.awayColor}"></div>
+            <div class="pb-away" style="background:${aProb > 50 ? g.awayColor : g.homeColor};opacity:0.35"></div>
           </div>
           <div class="prob-nums">
-            <div class="pnum">
-              <span class="pval ${hProb >= 50 ? 'fav' : ''}">${hProb.toFixed(0)}%</span>
-              <span class="pname">${home.split(' ').pop()}</span>
-            </div>
-            <div class="pnum right">
-              <span class="pval ${aProb > 50 ? 'fav' : ''}">${aProb.toFixed(0)}%</span>
-              <span class="pname">${away.split(' ').pop()}</span>
-            </div>
+            <div class="pnum"><span class="pval ${hProb >= 50 ? 'fav':''}">${hProb.toFixed(0)}%</span><span class="pname">${g.homeTeam.split(' ').pop()}</span></div>
+            <div class="pnum right"><span class="pval ${aProb > 50 ? 'fav':''}">${aProb.toFixed(0)}%</span><span class="pname">${g.awayTeam.split(' ').pop()}</span></div>
+          </div>
+        </div>
+        <div class="odds-row">
+          <div class="odds-team">
+            <span class="odds-price ${hProb >= 50 ? '' : 'dim'}">${hOdds}</span>
+            <span class="odds-tag">${g.homeTeam.split(' ').pop()} fair odds</span>
+          </div>
+          <div class="odds-center">model fair price<br><span style="font-size:0.55rem;opacity:0.6">ELO-based</span></div>
+          <div class="odds-team right">
+            <span class="odds-price ${aProb > 50 ? '' : 'dim'}">${aOdds}</span>
+            <span class="odds-tag">${g.awayTeam.split(' ').pop()} fair odds</span>
           </div>
         </div>
         <div class="verdict">
           <div class="verdict-left">${hProb >= 50 ? '🏠' : '✈️'} <span>Model tips: <strong>${tipped}</strong></span></div>
-          <span class="conf-pill ${cls}">${label} confidence</span>
+          <span class="conf-pill ${cls}">${label}</span>
         </div>
         <div class="factors">${factors.map(f => `<span class="factor">${f}</span>`).join('')}</div>
       </div>
@@ -656,114 +705,121 @@ function renderNRL(events, standings) {
   }).join('');
 
   el.innerHTML = `<div class="cards">${html}</div>`;
-
-  const avg = (totalConf / events.length).toFixed(0);
-  document.getElementById('s-conf').textContent = avg + '%';
+  document.getElementById('s-conf').textContent = (totalConf / events.length).toFixed(0) + '%';
   document.getElementById('s-conf-sub').textContent = `avg across ${events.length} games`;
-  document.getElementById('s-acc').textContent = '—';
-  document.getElementById('s-acc-sub').textContent = 'ELO model (position)';
 }
 
-function buildFactorsNRL(hProb, home, away, standings) {
-  const pos = name => {
-    const s = standings.find(t => name.includes((t.strTeam || '').split(' ').pop()) ||
-                                   (t.strTeam || '').includes(name.split(' ').pop()));
-    return s ? parseInt(s.intRank || s.intPosition || 9) : 9;
+function buildNRLFactors(hProb, homeAbbr, homeName, awayAbbr, awayName, standings) {
+  const pos = (abbr, name) => {
+    const s = standings.find(t => t.abbr === abbr || t.name?.split(' ').pop() === name?.split(' ').pop());
+    return s ? s.rank : Math.ceil((standings.length || 17) / 2);
   };
-  const hp = pos(home);
-  const ap = pos(away);
+  const hp = pos(homeAbbr, homeName);
+  const ap = pos(awayAbbr, awayName);
   const f = [];
   f.push(`📍 Home advantage (+45 ELO)`);
   f.push(`🏆 Ladder: #${hp} vs #${ap}`);
-  if (Math.abs(hp - ap) <= 2) f.push('⚖️ Closely ranked teams');
-  if (Math.abs(hProb - 50) < 8) f.push('🎯 Coin-flip contest');
-  if (Math.abs(hProb - 50) >= 25) f.push('💪 Clear model favourite');
+  if (Math.abs(hp - ap) <= 2) f.push('⚖️ Similar ladder position');
+  if (Math.abs(hProb - 50) < 8) f.push('🎯 Very tight matchup');
+  if (Math.abs(hProb - 50) >= 25) f.push('💪 Clear favourite on paper');
   return f;
 }
 
 // ── Render: Ladder ────────────────────────────────────────────────────────
 function renderLadder(standings, lg) {
-  const el = document.getElementById('ladder');
+  document.getElementById('ladder').innerHTML = '<div style="color:var(--muted);font-size:0.78rem">Loading…</div>';
   document.getElementById('ladder-title').textContent = lg === 'afl' ? 'AFL Ladder' : 'NRL Ladder';
 
   if (!standings || !standings.length) {
-    el.innerHTML = `<div style="color:var(--muted);font-size:0.75rem">Standings unavailable for this year.</div>`;
+    document.getElementById('ladder').innerHTML = `<div style="color:var(--muted);font-size:0.75rem">Standings unavailable.</div>`;
     return;
   }
 
+  const cutoff = lg === 'afl' ? 8 : 8; // finals line after position 8 (0-indexed)
+
   const rows = standings.slice(0, lg === 'afl' ? 18 : 17).map((s, i) => {
-    const finalsClass = i === 8 ? 'finals-line' : '';
-    const name = lg === 'afl'
-      ? (s.name || s.team || '?').split(' ').pop()
-      : (s.strTeam || '?').split(' ').pop();
-    const w    = lg === 'afl' ? (s.wins ?? '—') : (s.intWin ?? '—');
-    const pts  = lg === 'afl' ? (s.pts  ?? '—') : (s.intPoints ?? '—');
-    const p    = lg === 'afl' ? (s.played ?? '—') : (s.intPlayed ?? '—');
+    const fc = i === cutoff ? 'finals-line' : '';
+    let name, played, wins, pts;
+
+    if (lg === 'afl') {
+      // Squiggle format
+      name   = (s.name || s.team || '?').split(' ').pop();
+      played = s.played ?? '—';
+      wins   = s.wins   ?? '—';
+      pts    = s.pts    ?? '—';
+    } else {
+      // ESPN format (parsed by espnNRLStandings)
+      name   = (s.name || '?').split(' ').pop();
+      played = s.played ?? '—';
+      wins   = s.wins   ?? '—';
+      pts    = s.pts    ?? '—';
+    }
+
     return `<tr>
-      <td class="${finalsClass}">${i + 1}</td>
-      <td class="${finalsClass}">${name}</td>
-      <td class="${finalsClass}">${p}</td>
-      <td class="${finalsClass}">${w}</td>
-      <td class="pts ${finalsClass}">${pts}</td>
+      <td class="${fc}">${i + 1}</td>
+      <td class="${fc}">${name}</td>
+      <td class="${fc}">${played}</td>
+      <td class="${fc}">${wins}</td>
+      <td class="pts ${fc}">${pts}</td>
     </tr>`;
   }).join('');
 
-  el.innerHTML = `
+  document.getElementById('ladder').innerHTML = `
     <table class="ladder">
       <thead><tr><th>#</th><th>Team</th><th>P</th><th>W</th><th>PTS</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
-    <div style="margin-top:8px;font-size:0.6rem;color:var(--muted)">── Finals line</div>`;
+    <div style="margin-top:7px;font-size:0.6rem;color:var(--muted)">── Finals cutoff</div>`;
 }
 
-// ── Render: Season history pips ───────────────────────────────────────────
-function renderAccGrid(completedTips) {
-  const el = document.getElementById('acc-grid');
+// ── Render: season pip grid ───────────────────────────────────────────────
+function renderAccGrid(allTips) {
   const rounds = league === 'afl' ? 24 : 27;
-
-  // Build per-round accuracy from completedTips
   const roundMap = {};
-  completedTips.forEach(t => {
+  allTips.forEach(t => {
+    if (t.correct == null) return;
     if (!roundMap[t.round]) roundMap[t.round] = { c: 0, t: 0 };
     roundMap[t.round].t++;
     if (t.correct === 1) roundMap[t.round].c++;
   });
-
   let html = '';
   for (let r = 1; r <= rounds; r++) {
     let cls = 'pip-fut';
     if (r === currentRound) cls = 'pip-curr';
     else if (roundMap[r]) {
-      const pct = roundMap[r].c / roundMap[r].t;
-      cls = pct >= 0.7 ? 'pip-good' : pct >= 0.5 ? 'pip-ok' : 'pip-bad';
+      const p = roundMap[r].c / roundMap[r].t;
+      cls = p >= 0.7 ? 'pip-good' : p >= 0.5 ? 'pip-ok' : 'pip-bad';
     }
     html += `<div class="acc-pip ${cls}" title="Round ${r}">${r}</div>`;
   }
-  el.innerHTML = html;
+  document.getElementById('acc-grid').innerHTML = html;
 }
 
-// ── Load functions ────────────────────────────────────────────────────────
+// ── Load: AFL ─────────────────────────────────────────────────────────────
 async function loadAFL() {
-  document.getElementById('games').innerHTML = `<div class="loading"><div class="spinner"></div>Fetching AFL data…</div>`;
+  document.getElementById('games').innerHTML  = `<div class="loading"><div class="spinner"></div>Fetching AFL data…</div>`;
+  document.getElementById('ladder').innerHTML = `<div style="color:var(--muted);font-size:0.78rem">Loading…</div>`;
+
   try {
     const [games, tips, standings, allTips] = await Promise.all([
       aflGames(currentRound),
       aflTips(currentRound),
       aflStandings(currentRound),
-      aflSeasonTips(),
+      aflAllTips(),
     ]);
 
     const tipMap = aggregateTips(tips);
     const modelNums = Object.values(tipMap).map(t => t.n);
-    const avgModels = modelNums.length ? Math.round(modelNums.reduce((a, b) => a + b, 0) / modelNums.length) : '—';
+    const avgM = modelNums.length ? Math.round(modelNums.reduce((a, b) => a + b, 0) / modelNums.length) : '—';
+    document.getElementById('s-models').textContent     = avgM;
+    document.getElementById('s-models-sub').textContent = 'models aggregated (AFL)';
+    document.getElementById('s-src').textContent        = 'Squiggle';
+    document.getElementById('s-src-sub').textContent    = 'squiggle.com.au';
 
-    document.getElementById('s-models').textContent = avgModels;
-    document.getElementById('s-src').textContent = 'Squiggle';
-    document.getElementById('s-src-sub').textContent = 'squiggle.com.au';
-
-    // Season accuracy from all tips
     const done = allTips.filter(t => t.correct !== null);
-    const acc  = done.length ? { correct: done.filter(t => t.correct === 1).length, total: done.length, pct: (done.filter(t => t.correct === 1).length / done.length * 100).toFixed(1) } : null;
+    const acc  = done.length
+      ? { correct: done.filter(t => t.correct === 1).length, total: done.length, pct: (done.filter(t => t.correct===1).length/done.length*100).toFixed(1) }
+      : null;
 
     renderAFL(games, tipMap, acc);
     renderLadder(standings, 'afl');
@@ -773,36 +829,42 @@ async function loadAFL() {
     console.error(err);
     document.getElementById('games').innerHTML = `
       <div class="error-box">
-        Failed to load AFL data. This is usually a network issue.<br>
-        <small style="opacity:0.6">${err.message}</small><br><br>
-        <a href="https://api.squiggle.com.au/?q=games;year=${year()};round=${currentRound}" target="_blank">Check API directly →</a>
+        Failed to load AFL data.<br>
+        <small>${err.message}</small><br><br>
+        <a href="https://api.squiggle.com.au/?q=games;year=${yr()};round=${currentRound}" target="_blank">Check Squiggle API →</a>
       </div>`;
   }
 }
 
+// ── Load: NRL ─────────────────────────────────────────────────────────────
 async function loadNRL() {
-  document.getElementById('games').innerHTML = `<div class="loading"><div class="spinner"></div>Fetching NRL data…</div>`;
+  document.getElementById('games').innerHTML  = `<div class="loading"><div class="spinner"></div>Fetching NRL data…</div>`;
+  document.getElementById('ladder').innerHTML = `<div style="color:var(--muted);font-size:0.78rem">Loading…</div>`;
+
   try {
-    const [events, table] = await Promise.all([
-      nrlEvents(currentRound),
-      nrlTable(),
+    const [events, standings] = await Promise.all([
+      espnNRLGames(currentRound),
+      espnNRLStandings(),
     ]);
 
-    document.getElementById('s-models').textContent = '1';
+    document.getElementById('s-models').textContent     = '1';
     document.getElementById('s-models-sub').textContent = 'ELO position model';
-    document.getElementById('s-src').textContent = 'NRL + ELO';
-    document.getElementById('s-src-sub').textContent = 'thesportsdb.com';
+    document.getElementById('s-src').textContent        = 'ESPN + ELO';
+    document.getElementById('s-src-sub').textContent    = 'espn.com.au';
+    document.getElementById('s-acc').textContent        = '—';
+    document.getElementById('s-acc-sub').textContent    = 'ELO model';
 
-    renderNRL(events, table);
-    renderLadder(table, 'nrl');
-    renderAccGrid([]); // No per-round accuracy data for NRL ELO model
+    renderNRL(events, standings);
+    renderLadder(standings, 'nrl');
+    renderAccGrid([]);
 
   } catch (err) {
     console.error(err);
     document.getElementById('games').innerHTML = `
       <div class="error-box">
         Failed to load NRL data.<br>
-        <small style="opacity:0.6">${err.message}</small>
+        <small>${err.message}</small><br><br>
+        Try navigating to a different round, or check your connection.
       </div>`;
   }
 }
@@ -810,7 +872,7 @@ async function loadNRL() {
 // ── Controls ──────────────────────────────────────────────────────────────
 function changeRound(d) {
   currentRound = Math.max(1, Math.min(maxRound, currentRound + d));
-  document.getElementById('rh').textContent = `Round ${currentRound}`;
+  document.getElementById('rh').textContent     = `Round ${currentRound}`;
   document.getElementById('rlabel').textContent = `Round ${currentRound}`;
   league === 'afl' ? loadAFL() : loadNRL();
 }
@@ -820,18 +882,23 @@ function setLeague(l) {
   document.getElementById('tab-afl').className = 'ltab' + (l === 'afl' ? ' active' : '');
   document.getElementById('tab-nrl').className = 'ltab' + (l === 'nrl' ? ' active' : '');
 
-  document.getElementById('s-conf').textContent = '—';
-  document.getElementById('s-acc').textContent = '—';
-  document.getElementById('s-acc-sub').textContent = 'loading…';
+  // Reset stats
+  ['s-conf','s-acc','s-models','s-src'].forEach(id => {
+    document.getElementById(id).textContent = '—';
+  });
+  document.getElementById('s-acc-sub').textContent  = 'loading…';
+  document.getElementById('s-conf-sub').textContent = 'this round';
 
   if (l === 'afl') {
     maxRound = 24;
     document.getElementById('model-name').textContent = 'Squiggle Aggregate';
     document.getElementById('model-desc').textContent =
-      'Predictions aggregated from all independent AFL forecasting models submitted to the Squiggle API. Win probabilities represent the consensus across every model that has lodged tips for this round — a more reliable signal than any single model.';
+      'Win probabilities are the consensus of all AFL forecasting models that have submitted tips to Squiggle. Models update after Thursday team selection announcements. A split vote (e.g. 5/9 models) is a useful indicator that a game has genuine uncertainty — often reflecting injury or team selection concerns.';
+    document.getElementById('team-lists-link').href        = 'https://www.afl.com.au/matches/team-lists';
+    document.getElementById('team-lists-link').textContent = '📋 View AFL Team Lists →';
     detectAFLRound().then(r => {
       currentRound = r;
-      document.getElementById('rh').textContent = `Round ${currentRound}`;
+      document.getElementById('rh').textContent     = `Round ${currentRound}`;
       document.getElementById('rlabel').textContent = `Round ${currentRound}`;
       loadAFL();
     });
@@ -839,11 +906,15 @@ function setLeague(l) {
     maxRound = 27;
     document.getElementById('model-name').textContent = 'Position-Weighted ELO';
     document.getElementById('model-desc').textContent =
-      'Win probabilities computed from each team\'s NRL ladder position using a position-weighted ELO model with a home-ground advantage of +45 ELO points. Higher confidence predictions occur when ladder positions are further apart. A purpose-built NRL forecasting model will be integrated in a future update.';
-    currentRound = detectNRLRound();
-    document.getElementById('rh').textContent = `Round ${currentRound}`;
-    document.getElementById('rlabel').textContent = `Round ${currentRound}`;
-    loadNRL();
+      'Win probabilities computed from each team\'s NRL ladder position using a position-weighted ELO model with a +45 ELO home-ground bonus. The further apart teams are on the ladder, the higher the model\'s confidence. Live data is sourced from ESPN\'s public NRL API.';
+    document.getElementById('team-lists-link').href        = 'https://www.nrl.com/draw/';
+    document.getElementById('team-lists-link').textContent = '📋 View NRL Draw & Teams →';
+    detectNRLRound().then(r => {
+      currentRound = r;
+      document.getElementById('rh').textContent     = `Round ${currentRound}`;
+      document.getElementById('rlabel').textContent = `Round ${currentRound}`;
+      loadNRL();
+    });
   }
 }
 
@@ -851,11 +922,11 @@ function setLeague(l) {
 (async () => {
   document.getElementById('model-name').textContent = 'Squiggle Aggregate';
   document.getElementById('model-desc').textContent =
-    'Predictions aggregated from all independent AFL forecasting models submitted to the Squiggle API. Win probabilities represent the consensus across every model that has lodged tips for this round — a more reliable signal than any single model.';
+    'Win probabilities are the consensus of all AFL forecasting models that have submitted tips to Squiggle. Models update after Thursday team selection announcements. A split vote (e.g. 5/9 models) is a useful indicator that a game has genuine uncertainty — often reflecting injury or team selection concerns.';
 
-  maxRound = 24;
+  maxRound     = 24;
   currentRound = await detectAFLRound();
-  document.getElementById('rh').textContent = `Round ${currentRound}`;
+  document.getElementById('rh').textContent     = `Round ${currentRound}`;
   document.getElementById('rlabel').textContent = `Round ${currentRound}`;
   await loadAFL();
 })();
