@@ -261,8 +261,8 @@
 <script>
 // ── API endpoints ─────────────────────────────────────────────────────────
 const SQUIGGLE = 'https://api.squiggle.com.au/';
-const ESPN     = 'https://site.api.espn.com/apis/site/v2/sports/rugby-league/nrl/';
-const ESPN_STD = 'https://site.web.api.espn.com/apis/v2/sports/rugby-league/nrl/standings';
+const TSDB     = 'https://www.thesportsdb.com/api/v1/json/3/';
+const NRL_ID   = '4416'; // Australian National Rugby League (TheSportsDB)
 
 // ── AFL team metadata ─────────────────────────────────────────────────────
 const AFL_META = {
@@ -396,89 +396,106 @@ async function detectAFLRound() {
   } catch { return 1; }
 }
 
-// ── NRL data fetching (ESPN public API) ───────────────────────────────────
-async function espnNRLGames(round) {
-  const url = `${ESPN}scoreboard?week=${round}&season=${yr()}&seasontype=2`;
-  const r = await fetch(url);
-  if (!r.ok) throw new Error(`ESPN returned HTTP ${r.status}`);
+// ── NRL team colours (TheSportsDB doesn't provide them) ───────────────────
+const NRL_META = {
+  'Canberra Raiders':                  { c: '#5b8c28', a: 'CBR' },
+  'Sydney Roosters':                   { c: '#003a78', a: 'SYD' },
+  'Penrith Panthers':                  { c: '#8b0021', a: 'PEN' },
+  'Brisbane Broncos':                  { c: '#6f263d', a: 'BRI' },
+  'South Sydney Rabbitohs':            { c: '#007a4d', a: 'SSR' },
+  'Cronulla Sharks':                   { c: '#00a0c6', a: 'CRO' },
+  'Cronulla-Sutherland Sharks':        { c: '#00a0c6', a: 'CRO' },
+  'Melbourne Storm':                   { c: '#5e259b', a: 'MEL' },
+  'Manly Sea Eagles':                  { c: '#6f0026', a: 'MAN' },
+  'Manly-Warringah Sea Eagles':        { c: '#6f0026', a: 'MAN' },
+  'Gold Coast Titans':                 { c: '#009fd8', a: 'GCT' },
+  'North Queensland Cowboys':          { c: '#003b8e', a: 'NQC' },
+  'St George Illawara Dragons':        { c: '#e4002b', a: 'DRA' },
+  'St. George Illawara Dragons':       { c: '#e4002b', a: 'DRA' },
+  'Newcastle Knights':                 { c: '#003087', a: 'NEW' },
+  'Wests Tigers':                      { c: '#f47920', a: 'WST' },
+  'Parramatta Eels':                   { c: '#003087', a: 'PAR' },
+  'New Zealand Warriors':              { c: '#009bde', a: 'NZW' },
+  'Canterbury Bankstown Bulldogs':     { c: '#0057b8', a: 'CBY' },
+  'Canterbury-Bankstown Bulldogs':     { c: '#0057b8', a: 'CBY' },
+  'Dolphins':                          { c: '#d24600', a: 'DOL' },
+};
+
+function nrlMeta(name) {
+  if (NRL_META[name]) return NRL_META[name];
+  // Fuzzy match on last word
+  const last = name.split(' ').pop();
+  const found = Object.entries(NRL_META).find(([k]) => k.includes(last));
+  return found ? found[1] : { c: '#2e3a5c', a: name.substring(0, 3).toUpperCase() };
+}
+
+// ── NRL data fetching (TheSportsDB, ID 4416) ──────────────────────────────
+
+// Fetch round-specific fixtures (includes unplayed games)
+async function nrlRoundEvents(round, year) {
+  const r = await fetch(`${TSDB}eventsround.php?id=${NRL_ID}&r=${round}&s=${year}`);
+  if (!r.ok) throw new Error(`TSDB HTTP ${r.status}`);
   return (await r.json()).events || [];
 }
 
-async function espnNRLStandings() {
-  const r = await fetch(`${ESPN_STD}?season=${yr()}`);
-  if (!r.ok) throw new Error(`ESPN standings HTTP ${r.status}`);
-  const data = await r.json();
-  // ESPN standings can be nested under children or directly
-  const entries =
-    data?.children?.[0]?.standings?.entries ||
-    data?.standings?.entries ||
-    [];
-  return entries.map((e, i) => {
-    const stat = name => {
-      const s = (e.stats || []).find(x => x.name === name || x.abbreviation === name);
-      return s ? (s.value ?? s.displayValue ?? '—') : '—';
-    };
-    return {
-      rank:   i + 1,
-      name:   e.team?.displayName || e.team?.name || '?',
-      abbr:   e.team?.abbreviation || '?',
-      color:  e.team?.color ? '#' + e.team.color : '#2e3a5c',
-      played: stat('gamesPlayed') ?? stat('GP'),
-      wins:   stat('wins')        ?? stat('W'),
-      pts:    stat('points')      ?? stat('PTS'),
-    };
+// Fetch all played season events — used to compute standings + detect round
+async function nrlSeasonEvents(year) {
+  const r = await fetch(`${TSDB}eventsseason.php?id=${NRL_ID}&s=${year}`);
+  if (!r.ok) throw new Error(`TSDB HTTP ${r.status}`);
+  return (await r.json()).events || [];
+}
+
+// Compute NRL ladder from raw season event results
+function computeNRLStandings(events) {
+  const teams = {};
+  events.forEach(ev => {
+    if (ev.strStatus !== 'Match Finished') return;
+    const hs = parseInt(ev.intHomeScore ?? -1);
+    const as_ = parseInt(ev.intAwayScore ?? -1);
+    if (hs < 0 || as_ < 0) return;
+    const home = ev.strHomeTeam;
+    const away = ev.strAwayTeam;
+    if (!teams[home]) teams[home] = { name: home, played: 0, wins: 0, losses: 0, pts: 0 };
+    if (!teams[away]) teams[away] = { name: away, played: 0, wins: 0, losses: 0, pts: 0 };
+    teams[home].played++; teams[away].played++;
+    if (hs > as_) {
+      teams[home].wins++; teams[home].pts += 2; teams[away].losses++;
+    } else if (as_ > hs) {
+      teams[away].wins++; teams[away].pts += 2; teams[home].losses++;
+    } else {
+      teams[home].pts++; teams[away].pts++; // draw (rare in NRL)
+    }
   });
+  return Object.values(teams)
+    .sort((a, b) => b.pts - a.pts || b.wins - a.wins)
+    .map((t, i) => ({ ...t, rank: i + 1 }));
 }
 
-// Parse a single ESPN NRL event into a clean object
-function parseESPNEvent(ev) {
-  const comp = ev.competitions?.[0];
-  const home = comp?.competitors?.find(c => c.homeAway === 'home');
-  const away = comp?.competitors?.find(c => c.homeAway === 'away');
-  const statusName = comp?.status?.type?.name || '';
-  return {
-    id:        ev.id,
-    date:      ev.date,
-    venue:     comp?.venue?.fullName || 'TBA',
-    homeTeam:  home?.team?.displayName || home?.team?.name || '?',
-    awayTeam:  away?.team?.displayName || away?.team?.name || '?',
-    homeAbbr:  home?.team?.abbreviation || '?',
-    awayAbbr:  away?.team?.abbreviation || '?',
-    homeColor: home?.team?.color ? '#' + home.team.color : '#2e3a5c',
-    awayColor: away?.team?.color ? '#' + away.team.color : '#2e3a5c',
-    homeScore: home?.score ?? null,
-    awayScore: away?.score ?? null,
-    isLive:    statusName === 'STATUS_IN_PROGRESS',
-    isDone:    statusName === 'STATUS_FINAL' || comp?.status?.type?.completed === true,
-  };
+// Detect the current NRL round from season data
+function detectNRLRoundFromEvents(events) {
+  const finished = events.filter(ev => ev.strStatus === 'Match Finished');
+  if (!finished.length) return 1;
+  const maxDone = Math.max(...finished.map(ev => parseInt(ev.intRound || 1)));
+  // If all games in the last finished round are done, show next round
+  const inLastRound = events.filter(ev => parseInt(ev.intRound) === maxDone);
+  const allDone = inLastRound.every(ev => ev.strStatus === 'Match Finished');
+  return allDone ? maxDone + 1 : maxDone;
 }
 
-async function detectNRLRound() {
-  try {
-    const r = await fetch(`${ESPN}scoreboard?season=${yr()}&seasontype=2`);
-    const data = await r.json();
-    if (data?.week?.number) return data.week.number;
-  } catch { /* fall through */ }
-  // Estimate from calendar — NRL starts first week of March
-  const now   = new Date();
-  const start = new Date(now.getFullYear(), 2, 6);
-  return Math.max(1, Math.min(27, Math.floor((now - start) / (7 * 86400000)) + 1));
-}
-
-// ELO model for NRL: ladder position + home advantage
-function nrlProb(homeAbbr, homeName, awayAbbr, awayName, standings) {
-  const pos = (abbr, name) => {
+// ELO model: win probability from ladder position + home advantage
+function nrlProb(homeName, awayName, standings) {
+  const pos = name => {
     const s = standings.find(t =>
-      t.abbr === abbr ||
       t.name === name ||
-      t.name?.split(' ').pop() === name?.split(' ').pop()
+      t.name?.split(' ').pop() === name?.split(' ').pop() ||
+      name?.includes(t.name?.split(' ').pop())
     );
     return s ? s.rank : Math.ceil((standings.length || 17) / 2);
   };
-  const n  = standings.length || 17;
-  const hp = pos(homeAbbr, homeName);
-  const ap = pos(awayAbbr, awayName);
-  const eloH = (n + 1 - hp) * 30 + 45; // +45 home advantage
+  const n   = standings.length || 17;
+  const hp  = pos(homeName);
+  const ap  = pos(awayName);
+  const eloH = (n + 1 - hp) * 30 + 45; // +45 home ground advantage
   const eloA = (n + 1 - ap) * 30;
   const p = 1 / (1 + Math.pow(10, (eloA - eloH) / 400));
   return Math.min(Math.max(p * 100, 15), 85);
@@ -623,75 +640,79 @@ function renderNRL(events, standings) {
 
   let totalConf = 0;
   const html = events.map(ev => {
-    const g = parseESPNEvent(ev);
-    const hProb = nrlProb(g.homeAbbr, g.homeTeam, g.awayAbbr, g.awayTeam, standings);
+    const home   = ev.strHomeTeam;
+    const away   = ev.strAwayTeam;
+    const isDone = ev.strStatus === 'Match Finished';
+    const hScore = isDone ? parseInt(ev.intHomeScore) : null;
+    const aScore = isDone ? parseInt(ev.intAwayScore) : null;
+    const hm = nrlMeta(home);
+    const am = nrlMeta(away);
+
+    const hProb = nrlProb(home, away, standings);
     const aProb = 100 - hProb;
     totalConf += Math.max(hProb, aProb);
 
-    const tipped = hProb >= 50 ? g.homeTeam : g.awayTeam;
+    const tipped = hProb >= 50 ? home : away;
     const { label, cls } = confInfo(hProb);
     const hOdds = impliedOdds(hProb);
     const aOdds = impliedOdds(aProb);
-    const factors = buildNRLFactors(hProb, g.homeAbbr, g.homeTeam, g.awayAbbr, g.awayTeam, standings);
+    const factors = buildNRLFactors(hProb, home, away, standings);
 
     let cardClass = '';
-    if (g.isDone) {
-      const hw = parseInt(g.homeScore) > parseInt(g.awayScore);
-      const winner = hw ? g.homeTeam : g.awayTeam;
+    if (isDone && hScore !== null && aScore !== null) {
+      const winner = hScore > aScore ? home : away;
       cardClass = winner === tipped ? 'model-right' : 'model-wrong';
     }
-    if (g.isLive) cardClass = 'is-live';
 
-    let mid = '';
-    if (g.isLive) mid = `<div class="score-mid"><div class="scores live">${g.homeScore ?? 0} – ${g.awayScore ?? 0}</div><div class="slabel">Live</div></div>`;
-    else if (g.isDone) mid = `<div class="score-mid"><div class="scores">${g.homeScore} – ${g.awayScore}</div><div class="slabel">Final</div></div>`;
-    else mid = `<div style="font-size:0.7rem;font-weight:700;color:var(--muted)">VS</div>`;
+    const mid = isDone && hScore !== null
+      ? `<div class="score-mid"><div class="scores">${hScore} – ${aScore}</div><div class="slabel">Final</div></div>`
+      : `<div style="font-size:0.7rem;font-weight:700;color:var(--muted)">VS</div>`;
 
     let resultHtml = '';
-    if (g.isDone) {
-      const hw = parseInt(g.homeScore) > parseInt(g.awayScore);
-      const winner = hw ? g.homeTeam : g.awayTeam;
-      const right = winner === tipped;
+    if (isDone && hScore !== null && aScore !== null) {
+      const winner = hScore > aScore ? home : away;
+      const right  = winner === tipped;
       resultHtml = `<div class="result-banner ${right ? 'correct' : 'wrong'}">
-        ${right ? '✓ Model correct' : '✗ Model incorrect'} — ${g.homeTeam} ${g.homeScore} – ${g.awayScore} ${g.awayTeam}
+        ${right ? '✓ Model correct' : '✗ Model incorrect'} — ${home} ${hScore} – ${aScore} ${away}
       </div>`;
     }
+
+    const dateStr = ev.dateEvent ? fmtDate(ev.dateEvent) : 'TBA';
 
     return `
     <div class="card ${cardClass}">
       <div class="card-meta">
         <div class="card-meta-left">
-          ${g.isLive ? '<span class="live-pill">LIVE</span>' : ''}
-          <span>📍 ${g.venue}</span>
-          <span>🕐 ${fmtDate(g.date)}</span>
+          <span>📍 ${ev.strVenue || 'TBA'}</span>
+          <span>🕐 ${dateStr}</span>
         </div>
         <span style="font-size:0.62rem;color:var(--muted)">ELO model</span>
       </div>
       <div class="card-body">
         <div class="matchup">
-          <div class="team"><div class="emblem" style="background:${g.homeColor}">${g.homeAbbr}</div><div class="team-name">${g.homeTeam}</div></div>
+          <div class="team"><div class="emblem" style="background:${hm.c}">${hm.a}</div><div class="team-name">${home}</div></div>
           ${mid}
-          <div class="team away"><div class="emblem" style="background:${g.awayColor}">${g.awayAbbr}</div><div class="team-name">${g.awayTeam}</div></div>
+          <div class="team away"><div class="emblem" style="background:${am.c}">${am.a}</div><div class="team-name">${away}</div></div>
         </div>
         <div class="prob-wrap">
           <div class="prob-bar">
-            <div class="pb-home" style="width:${hProb.toFixed(1)}%;background:${hProb >= 50 ? g.homeColor : g.awayColor}"></div>
-            <div class="pb-away" style="background:${aProb > 50 ? g.awayColor : g.homeColor};opacity:0.35"></div>
+            <div class="pb-home" style="width:${hProb.toFixed(1)}%;background:${hProb >= 50 ? hm.c : am.c}"></div>
+            <div class="pb-away" style="background:${aProb > 50 ? am.c : hm.c};opacity:0.35"></div>
           </div>
           <div class="prob-nums">
-            <div class="pnum"><span class="pval ${hProb >= 50 ? 'fav':''}">${hProb.toFixed(0)}%</span><span class="pname">${g.homeTeam.split(' ').pop()}</span></div>
-            <div class="pnum right"><span class="pval ${aProb > 50 ? 'fav':''}">${aProb.toFixed(0)}%</span><span class="pname">${g.awayTeam.split(' ').pop()}</span></div>
+            <div class="pnum"><span class="pval ${hProb >= 50 ? 'fav':''}">${hProb.toFixed(0)}%</span><span class="pname">${home.split(' ').pop()}</span></div>
+            <div class="pnum right"><span class="pval ${aProb > 50 ? 'fav':''}">${aProb.toFixed(0)}%</span><span class="pname">${away.split(' ').pop()}</span></div>
           </div>
         </div>
         <div class="odds-row">
           <div class="odds-team">
             <span class="odds-price ${hProb >= 50 ? '' : 'dim'}">${hOdds}</span>
-            <span class="odds-tag">${g.homeTeam.split(' ').pop()} fair odds</span>
+            <span class="odds-tag">${home.split(' ').pop()} fair odds</span>
           </div>
           <div class="odds-center">model fair price<br><span style="font-size:0.55rem;opacity:0.6">ELO-based</span></div>
           <div class="odds-team right">
             <span class="odds-price ${aProb > 50 ? '' : 'dim'}">${aOdds}</span>
-            <span class="odds-tag">${g.awayTeam.split(' ').pop()} fair odds</span>
+            <span class="odds-tag">${away.split(' ').pop()} fair odds</span>
           </div>
         </div>
         <div class="verdict">
@@ -705,22 +726,24 @@ function renderNRL(events, standings) {
   }).join('');
 
   el.innerHTML = `<div class="cards">${html}</div>`;
-  document.getElementById('s-conf').textContent = (totalConf / events.length).toFixed(0) + '%';
+  document.getElementById('s-conf').textContent     = (totalConf / events.length).toFixed(0) + '%';
   document.getElementById('s-conf-sub').textContent = `avg across ${events.length} games`;
 }
 
-function buildNRLFactors(hProb, homeAbbr, homeName, awayAbbr, awayName, standings) {
-  const pos = (abbr, name) => {
-    const s = standings.find(t => t.abbr === abbr || t.name?.split(' ').pop() === name?.split(' ').pop());
+function buildNRLFactors(hProb, homeName, awayName, standings) {
+  const pos = name => {
+    const s = standings.find(t =>
+      t.name === name || t.name?.split(' ').pop() === name?.split(' ').pop() || name?.includes(t.name?.split(' ').pop())
+    );
     return s ? s.rank : Math.ceil((standings.length || 17) / 2);
   };
-  const hp = pos(homeAbbr, homeName);
-  const ap = pos(awayAbbr, awayName);
+  const hp = pos(homeName);
+  const ap = pos(awayName);
   const f = [];
-  f.push(`📍 Home advantage (+45 ELO)`);
-  f.push(`🏆 Ladder: #${hp} vs #${ap}`);
-  if (Math.abs(hp - ap) <= 2) f.push('⚖️ Similar ladder position');
-  if (Math.abs(hProb - 50) < 8) f.push('🎯 Very tight matchup');
+  f.push('📍 Home advantage (+45 ELO)');
+  if (standings.length > 0) f.push(`🏆 Ladder: #${hp} vs #${ap}`);
+  if (standings.length > 0 && Math.abs(hp - ap) <= 2) f.push('⚖️ Closely matched on ladder');
+  if (Math.abs(hProb - 50) < 8)  f.push('🎯 Very tight contest');
   if (Math.abs(hProb - 50) >= 25) f.push('💪 Clear favourite on paper');
   return f;
 }
@@ -748,7 +771,7 @@ function renderLadder(standings, lg) {
       wins   = s.wins   ?? '—';
       pts    = s.pts    ?? '—';
     } else {
-      // ESPN format (parsed by espnNRLStandings)
+      // Computed from TSDB season results
       name   = (s.name || '?').split(' ').pop();
       played = s.played ?? '—';
       wins   = s.wins   ?? '—';
@@ -842,15 +865,24 @@ async function loadNRL() {
   document.getElementById('ladder').innerHTML = `<div style="color:var(--muted);font-size:0.78rem">Loading…</div>`;
 
   try {
-    const [events, standings] = await Promise.all([
-      espnNRLGames(currentRound),
-      espnNRLStandings(),
-    ]);
+    // Try current year; fall back to previous year if no data yet
+    let year = yr();
+    let seasonEvents = await nrlSeasonEvents(year);
+    if (!seasonEvents.length) {
+      year = yr() - 1;
+      seasonEvents = await nrlSeasonEvents(year);
+    }
+
+    // Compute ladder from season results
+    const standings = computeNRLStandings(seasonEvents);
+
+    // Round events for display (include unplayed games)
+    const events = await nrlRoundEvents(currentRound, year);
 
     document.getElementById('s-models').textContent     = '1';
     document.getElementById('s-models-sub').textContent = 'ELO position model';
-    document.getElementById('s-src').textContent        = 'ESPN + ELO';
-    document.getElementById('s-src-sub').textContent    = 'espn.com.au';
+    document.getElementById('s-src').textContent        = 'TSDB + ELO';
+    document.getElementById('s-src-sub').textContent    = `${year} season`;
     document.getElementById('s-acc').textContent        = '—';
     document.getElementById('s-acc-sub').textContent    = 'ELO model';
 
@@ -906,15 +938,21 @@ function setLeague(l) {
     maxRound = 27;
     document.getElementById('model-name').textContent = 'Position-Weighted ELO';
     document.getElementById('model-desc').textContent =
-      'Win probabilities computed from each team\'s NRL ladder position using a position-weighted ELO model with a +45 ELO home-ground bonus. The further apart teams are on the ladder, the higher the model\'s confidence. Live data is sourced from ESPN\'s public NRL API.';
+      'Win probabilities computed from each team\'s NRL ladder position using a position-weighted ELO model with a +45 ELO home-ground bonus. The ladder is derived from live season results. The further apart teams are on the ladder, the higher the model\'s confidence.';
     document.getElementById('team-lists-link').href        = 'https://www.nrl.com/draw/';
     document.getElementById('team-lists-link').textContent = '📋 View NRL Draw & Teams →';
-    detectNRLRound().then(r => {
-      currentRound = r;
+    // Detect current round from season data
+    (async () => {
+      try {
+        let year = yr();
+        let events = await nrlSeasonEvents(year);
+        if (!events.length) events = await nrlSeasonEvents(yr() - 1);
+        currentRound = detectNRLRoundFromEvents(events);
+      } catch { currentRound = 1; }
       document.getElementById('rh').textContent     = `Round ${currentRound}`;
       document.getElementById('rlabel').textContent = `Round ${currentRound}`;
       loadNRL();
-    });
+    })();
   }
 }
 
